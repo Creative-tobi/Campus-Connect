@@ -7,8 +7,7 @@ const MONGO_DB_URL = process.env.MONGO_DB;
 const connectDB = async () => {
   try {
     await mongoose.connect(
-      MONGO_DB_URL ||
-        "mongodb+srv://codeadeoluwa:RZ2kh6JitLShxrhc@backendclass.qozdczp.mongodb.net/"
+      MONGO_DB_URL
     );
     console.log(`mongodb connected ${MONGO_DB_URL}`);
   } catch (error) {
