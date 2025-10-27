@@ -1,8 +1,4 @@
-<% const userData = typeof user !== 'undefined' ? user : (typeof window !==
-'undefined' ? getUserData() : null); %> <% const userRole = userData ?
-userData.role : 'user'; %> <% const userName = userData ? userData.firstName + '
-' + userData.lastName : 'User'; %> <% const userPicture = userData &&
-userData.profilePicture ? userData.profilePicture : null; %>
+<% const userData = typeof user !== 'undefined' ? user : (typeof window !== 'undefined' ? JSON.parse(sessionStorage.getItem('user')) : null); %> <% const userRole = userData ? userData.role : 'user'; %> <% const userName = userData ? userData.firstName + ' ' + userData.lastName : 'User'; %> <% const userPicture = userData && userData.profilePicture ? userData.profilePicture : null; %>
 
 <header class="bg-white shadow-sm">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

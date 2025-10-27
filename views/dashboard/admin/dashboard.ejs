@@ -1,7 +1,5 @@
 <!-- This file uses the layout.ejs -->
-<% title = 'Admin Dashboard | CampusConnect' %> <% userRole = 'admin' %>
-<!-- <%- include('../layout', { title: title, userRole: userRole, body: body }) %> -->
-
+""<%"" title = 'Admin Dashboard | CampusConnect' %> <% userRole = 'admin' %>
 <% const body = `
 <div class="max-w-6xl mx-auto">
   <div class="bg-white rounded-lg shadow p-6 mb-6">
@@ -126,7 +124,7 @@
           const activityDiv = document.createElement("div");
           activityDiv.className =
             "border-b border-gray-200 pb-3 mb-3 last:border-0 last:mb-0"; // Add border between items
-          activityDiv.innerHTML = `\
+          activityDiv.innerHTML = `
                         <div class="flex items-start">
                             <div class="bg-gray-200 border-2 border-dashed rounded-xl w-8 h-8 mr-3"></div> <!-- Icon placeholder -->
                             <div class="flex-1">

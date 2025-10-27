@@ -75,7 +75,7 @@
     // Example: Fetch club posts
     async function loadClubPosts() {
         try {
-            const response = await fetch(`/api/clubs/${clubId}/posts /`);
+            const response = await fetch(`/api/clubs/${clubId}/posts`);
             if (!response.ok) throw new Error('Failed to fetch posts');
             const data = await response.json();
             const container = document.getElementById('clubPosts');
@@ -85,7 +85,7 @@
                 data.posts.forEach(post => {
                     const postDiv = document.createElement('div');
                     postDiv.className = 'border-b border-gray-200 pb-4 mb-4 last:border-0 last:mb-0';
-                    postDiv.innerHTML = `\
+                    postDiv.innerHTML = `
                         <div class="flex items-start mb-2">
                             <div class="bg-gray-200 border-2 border-dashed rounded-xl w-8 h-8 mr-3"></div>
                             <div>
@@ -124,7 +124,7 @@
     // Example: Join/Leave/Delete Club functions (similar to profile)
     document.getElementById('joinClubBtn').addEventListener('click', async function() {
         try {
-            const response = await fetch(`/api/users/clubs/${clubId}/join /`, {
+            const response = await fetch(`/api/users/clubs/${clubId}/join`, {
                 method: 'POST',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -147,7 +147,7 @@
     document.getElementById('leaveClubBtn').addEventListener('click', async function() {
         if (confirm('Are you sure you want to leave this club?')) {
              try {
-                const response = await fetch(`/api/users/clubs/${clubId}/leave /`, {
+                const response = await fetch(`/api/users/clubs/${clubId}/leave`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -170,7 +170,7 @@
     document.getElementById('deleteClubBtn').addEventListener('click', async function() {
         if (confirm('Are you sure you want to delete this club? This action cannot be undone.')) {
              try {
-                const response = await fetch(`/api/clubs/${clubId} /`, {
+                const response = await fetch(`/api/clubs/${clubId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -191,18 +191,18 @@
     });
 
     document.getElementById('editClubBtn').addEventListener('click', function() {
-        window.location.href = `/api/clubs/${clubId}/edit /`;
+        window.location.href = `/api/clubs/${clubId}/edit`;
     });
 
     document.getElementById('manageClubBtn').addEventListener('click', function() {
-        window.location.href = `/api/clubs/${clubId}/manage/`;
+        window.location.href = `/api/clubs/${clubId}/manage`;
     });
 
     // Example: Delete Post function
     async function deletePost(postId) {
         if (confirm('Are you sure you want to delete this post?')) {
             try {
-                const response = await fetch(`/api/clubs/${clubId}/posts/${postId}/`, {
+                const response = await fetch(`/api/clubs/${clubId}/posts/${postId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': 'Bearer ' + localStorage.getItem('token')

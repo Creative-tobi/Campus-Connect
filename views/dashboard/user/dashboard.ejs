@@ -1,7 +1,6 @@
 <!-- This file uses the layout.ejs -->
 <% title = 'User Dashboard | CampusConnect' %> <% userRole = typeof user !==
-'undefined' ? user.role : 'user' %> <%- include('../layout', { title: title,
-userRole: userRole, body: body }) %> <% const userData = typeof user !==
+'undefined' ? user.role : 'user' %> <% const userData = typeof user !==
 'undefined' ? user : (typeof window !== 'undefined' ?
 JSON.parse(sessionStorage.getItem('user')) : null); %> <% const body = `
 <div class="max-w-4xl mx-auto">
@@ -15,19 +14,17 @@ JSON.parse(sessionStorage.getItem('user')) : null); %> <% const body = `
   <!-- Example Post Input -->
   <div class="bg-white rounded-lg shadow p-4 mb-6">
     <div class="flex items-center mb-4">
-      <% if (userData && userData.profilePicture) { %>
-      <img
-        src="<%= userData.profilePicture %>"
+      ` + (userData && userData.profilePicture ? `<img
+        src="${userData.profilePicture}"
         alt="Your Profile"
-        class="w-10 h-10 rounded-full object-cover mr-3" />
-      <% } else { %>
+        class="w-10 h-10 rounded-full object-cover mr-3" />` : `
       <div
         class="bg-gray-200 border-2 border-dashed rounded-full w-10 h-10 mr-3 flex items-center justify-center">
         <span class="text-gray-500 text-sm"
-          ><%= userData ? userData.firstName.charAt(0) : 'U' %></span
+          >${userData ? userData.firstName.charAt(0) : 'U'}</span
         >
       </div>
-      <% } %>
+      `) + `
       <input
         type="text"
         placeholder="Start a post..."
@@ -60,18 +57,16 @@ JSON.parse(sessionStorage.getItem('user')) : null); %> <% const body = `
     console.log(sessionStorage.getItem("token"));
 
     try {
-
-      const pro = await fetch("/api/users/dashboard",{
+      const pro = await fetch("/api/users/dashboard", {
         headers: {
           Authorization: "Bearer " + sessionStorage.getItem("token"),
-        }
-      })
+        },
+      });
       // This fetches posts from clubs the user is a member of
       const response = await fetch("/api/users/posts", {
         // Adjust route if necessary, e.g., /api/posts/my-clubs
         headers: {
           Authorization: "Bearer " + sessionStorage.getItem("token"),
-
         },
       });
       if (!response.ok) throw new Error("Failed to fetch posts");
@@ -83,57 +78,53 @@ JSON.parse(sessionStorage.getItem('user')) : null); %> <% const body = `
         data.posts.forEach((post) => {
           const postDiv = document.createElement("div");
           postDiv.className = "bg-white rounded-lg shadow p-6 mb-6";
-          postDiv.innerHTML = `
-                      <div class="flex items-start">
-                          <!-- Author Profile Picture -->
-                          ${
-                            post.author.profilePicture
-                              ? '<img src="' +
-                                post.author.profilePicture +
-                                '" alt="' +
-                                post.author.name +
-                                '" class="w-12 h-12 rounded-full object-cover mr-3">'
-                              : '<div class="bg-gray-200 border-2 border-dashed rounded-full w-12 h-12 mr-3 flex items-center justify-center"><span class="text-gray-500 text-sm">' +
-                                post.author.name.charAt(0) +
-                                "</span></div>"
-                          }
-                          <div class="flex-1">
-                              <h2 class="font-semibold text-gray-900">${
-                                post.author.name
-                              }</h2>
-                              <p class="text-xs text-gray-500">${
-                                post.club.name
-                              } | ${new Date(
-            post.createdAt
-          ).toLocaleString()}</p>
-                          </div>
-                      </div>
-                      <div class="mt-4">
-                          <h3 class="font-medium text-gray-900">${
-                            post.title
-                          }</h3>
-                          <p class="text-gray-800 mt-1">${post.content}</p>
-                          <!-- Handle post media if present -->
-                          ${
-                            post.media
-                              ? '<div class="mt-2 bg-gray-200 border-2 border-dashed rounded-xl w-full h-64 bg-cover bg-center" style="background-image: url(' +
-                                post.media +
-                                ');"></div>'
-                              : ""
-                          }
-                      </div>
-                      <div class="mt-4 flex space-x-4 text-gray-500">
-                          <button class="flex items-center hover:text-gray-700">
-                              <i class="far fa-thumbs-up mr-1"></i> Like
-                          </button>
-                          <button class="flex items-center hover:text-gray-700">
-                              <i class="far fa-comment mr-1"></i> Comment
-                          </button>
-                          <button class="flex items-center hover:text-gray-700">
-                              <i class="fas fa-share mr-1"></i> Share
-                          </button>
-                      </div>
-                  `;
+          postDiv.innerHTML =
+            '<div class="flex items-start">' +
+            "<!-- Author Profile Picture -->" +
+            (post.author.profilePicture
+              ? '<img src="' +
+                post.author.profilePicture +
+                '" alt="' +
+                post.author.name +
+                '" class="w-12 h-12 rounded-full object-cover mr-3">'
+              : '<div class="bg-gray-200 border-2 border-dashed rounded-full w-12 h-12 mr-3 flex items-center justify-center"><span class="text-gray-500 text-sm">' +
+                post.author.name.charAt(0) +
+                "</span></div>") +
+            '<div class="flex-1">' +
+            '<h2 class="font-semibold text-gray-900">' +
+            post.author.name +
+            "</h2>" +
+            '<p class="text-xs text-gray-500">' +
+            post.club.name +
+            " | " +
+            new Date(post.createdAt).toLocaleString() +
+            "</p>" +
+            "</div>" +
+            "</div>" +
+            '<div class="mt-4">' +
+            '<h3 class="font-medium text-gray-900">' +
+            post.title +
+            "</h3>" +
+            '<p class="text-gray-800 mt-1">' +
+            post.content +
+            "</p>" +
+            (post.media
+              ? '<div class="mt-2 bg-gray-200 border-2 border-dashed rounded-xl w-full h-64 bg-cover bg-center" style="background-image: url(' +
+                post.media +
+                ');"></div>'
+              : "") +
+            "</div>" +
+            '<div class="mt-4 flex space-x-4 text-gray-500">' +
+            '<button class="flex items-center hover:text-gray-700">' +
+            '<i class="far fa-thumbs-up mr-1"></i> Like' +
+            "</button>" +
+            '<button class="flex items-center hover:text-gray-700">' +
+            '<i class="far fa-comment mr-1"></i> Comment' +
+            "</button>" +
+            '<button class="flex items-center hover:text-gray-700">' +
+            '<i class="fas fa-share mr-1"></i> Share' +
+            "</button>" +
+            "</div>";
           container.appendChild(postDiv);
         });
       } else {
@@ -150,4 +141,5 @@ JSON.parse(sessionStorage.getItem('user')) : null); %> <% const body = `
   // Load posts when page loads
   document.addEventListener("DOMContentLoaded", loadClubPosts);
 </script>
-` %>
+`%> <%- include('../layout', { title: title, userRole: userRole, body: body })
+%>

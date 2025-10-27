@@ -60,7 +60,7 @@ const clubId = '<%= typeof club !== "undefined" ? club._id : "" %>';
         const formData = new FormData(this);
 
         try {
-            const response = await fetch(`/api/clubs/${clubId}/`, {
+            const response = await fetch(`/api/clubs/${clubId}`, {
                 method: 'PUT',
                 body: formData,
                 headers: {
@@ -71,7 +71,7 @@ const clubId = '<%= typeof club !== "undefined" ? club._id : "" %>';
             if (response.ok) {
                 const result = await response.json();
                 alert('Club updated successfully!');
-                window.location.href = `/api/clubs/${clubId}/`; // Redirect back to club detail
+                window.location.href = `/api/clubs/${clubId}`; // Redirect back to club detail
             } else {
                 const errorData = await response.json();
                 alert('Error: ' + errorData.error);
@@ -83,7 +83,7 @@ const clubId = '<%= typeof club !== "undefined" ? club._id : "" %>';
     });
 
     document.getElementById('cancelBtn').addEventListener('click', function() {
-        window.location.href = `/api/clubs/${clubId}/`; // Redirect back without saving
+        window.location.href = `/api/clubs/${clubId}`; // Redirect back without saving
     });
 </script>
 ` %>

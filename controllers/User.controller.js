@@ -32,7 +32,7 @@ const getDashboard = async (req, res) => {
       members: { $elemMatch: { user: userId } },
     }).select("name description category memberCount logo");
 
-    res.json({
+    res.render("dashboard/user/dashboard", {
       user,
       joinedClubs,
     });
@@ -183,7 +183,7 @@ const getClubDetails = async (req, res) => {
       return res.status(404).json({ error: "Club is not active" });
     }
 
-    res.json({ club });
+    res.render("dashboard/club_owner/club/detail", { club });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

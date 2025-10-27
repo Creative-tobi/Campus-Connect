@@ -71,7 +71,7 @@
           if (data.clubs && data.clubs.length > 0) {
               data.clubs.forEach(club => {
                   const row = document.createElement('tr');
-                  row.innerHTML = `\
+                  row.innerHTML = `
                       <td class="px-6 py-4 whitespace-nowrap">
                           <div class="flex items-center">
                               <div class="bg-gray-200 border-2 border-dashed rounded-xl w-8 h-8 mr-3"></div>
@@ -110,7 +110,7 @@
   async function approveClub(clubId) {
       if (confirm('Are you sure you want to approve this club?')) {
           try {
-              const response = await fetch(`/api/admin/clubs/${clubId}/approve/`, {
+              const response = await fetch(`/api/admin/clubs/${clubId}/approve`, {
                   method: 'PUT',
                   headers: {
                       'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -135,7 +135,7 @@
   async function rejectClub(clubId) {
       if (confirm('Are you sure you want to reject this club?')) {
           try {
-              const response = await fetch(`/api/admin/clubs/${clubId}/reject/`, {
+              const response = await fetch(`/api/admin/clubs/${clubId}/reject`, {
                   method: 'PUT',
                   headers: {
                       'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -160,7 +160,7 @@
   async function deleteClub(clubId) {
       if (confirm('Are you sure you want to delete this club? This action cannot be undone.')) {
           try {
-              const response = await fetch(`/api/admin/clubs/${clubId}/`, {
+              const response = await fetch(`/api/admin/clubs/${clubId}`, {
                   method: 'DELETE',
                   headers: {
                       'Authorization': 'Bearer ' + localStorage.getItem('token')

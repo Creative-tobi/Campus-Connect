@@ -3,7 +3,8 @@
 'undefined' ? user.role : 'user' %>
 <!-- <%- include('../layout', { title: title, userRole: userRole, body: body }) %> -->
 
-<% const body = `
+<% 
+const body = `
 <div class="max-w-4xl mx-auto">
   <div class="bg-white rounded-lg shadow p-6 mb-6">
     <div class="flex items-center">
@@ -86,7 +87,7 @@
   async function leaveClub(clubId) {
     if (confirm("Are you sure you want to leave this club?")) {
       try {
-        const response = await fetch(`/api/users/clubs/${clubId}/leave/`, {
+        const response = await fetch(`/api/users/clubs/${clubId}/leave`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': 'Bearer ' + sessionStorage.getItem('token') // Assuming token is stored in sessionStorage
@@ -127,5 +128,5 @@
   // Load clubs when page loads
   document.addEventListener("DOMContentLoaded", loadJoinedClubs);
 </script>
-` %> <%- include('../layout', { title: title, userRole: userRole, body: body })
-%>
+` %> 
+<%- include('../layout', { title: title, userRole: userRole, body: body }) %>

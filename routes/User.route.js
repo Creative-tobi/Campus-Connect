@@ -20,9 +20,7 @@ router.get(
   "/dashboard",
   authenticate,
   authorize("user", "club_owner", "admin"),
-  (req, res) => {
-    res.render("dashboard/user/dashboard");
-  }
+  getDashboard
 );
 router.post(
   "/clubs/:id/join",

@@ -39,7 +39,7 @@ const body = `
   // Example: Fetch join requests
   async function loadJoinRequests() {
     try {
-      const response = await fetch(`/api/clubs/${clubId}/requests /`);
+      const response = await fetch(`/api/clubs/${clubId}/requests`);
       if (!response.ok) throw new Error("Failed to fetch requests");
       const data = await response.json();
       const container = document.getElementById("joinRequestsList");
@@ -49,7 +49,7 @@ const body = `
         data.requests.forEach((request) => {
           const requestDiv = document.createElement("div");
           requestDiv.className = "border rounded-lg p-4 mb-2";
-          requestDiv.innerHTML = `\
+          requestDiv.innerHTML = `
                         <div class="flex items-center">
                             <div class="bg-gray-200 border-2 border-dashed rounded-xl w-8 h-8 mr-3"></div>
                             <div class="flex-1">
@@ -61,7 +61,7 @@ const body = `
                                 <button onclick="respondToRequest('${request._id}', 'reject')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-sm">Reject</button>
                             </div>
                         </div>
-                    ;/`;
+                    `;
           container.appendChild(requestDiv);
         });
       } else {
@@ -78,7 +78,7 @@ const body = `
   // Example: Fetch club members
   async function loadClubMembers() {
     try {
-      const response = await fetch(`/api/clubs/${clubId}/members /`);
+      const response = await fetch(`/api/clubs/${clubId}/members`);
       if (!response.ok) throw new Error("Failed to fetch members");
       const data = await response.json();
       const container = document.getElementById("clubMembersList");
@@ -115,7 +115,7 @@ const body = `
   async function respondToRequest(requestId, action) {
     try {
       const response =
-        await fetch(`/api/clubs/${clubId}/requests/${requestId}/`, {
+        await fetch(`/api/clubs/${clubId}/requests/${requestId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -125,7 +125,7 @@ const body = `
             });
 
       if (response.ok) {
-        alert(`/ Request/${action}ed successfully./`);
+        alert(`/ Request/${action}ed successfully`);
         loadJoinRequests(); // Reload requests
         loadClubMembers(); // Reload members if accepted
       } else {
@@ -143,7 +143,7 @@ const body = `
     if (confirm("Are you sure you want to remove this member?")) {
       try {
         const response =
-          await fetch(`/api/clubs/${clubId}/members/${memberId}/`, {
+          await fetch(`/api/clubs/${clubId}/members/${memberId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -170,5 +170,4 @@ const body = `
     loadClubMembers();
   });
 </script>
-` %> <%- include('../layout', { title: title, userRole: userRole, body: body })
-%>
+` %> <%- include('../layout', { title: title, userRole: userRole, body: body })%>

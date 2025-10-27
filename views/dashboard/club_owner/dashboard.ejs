@@ -1,6 +1,5 @@
 <!-- This file uses the layout.ejs -->
 <% title = 'Club Owner Dashboard | CampusConnect' %> <% userRole = 'club_owner'
-%> <%- include('../layout', { title: title, userRole: userRole, body: body }) %>
 <% const body = `
 <div class="max-w-4xl mx-auto">
   <div class="bg-white rounded-lg shadow p-6 mb-6">
@@ -107,7 +106,7 @@
                                 }
                             </div>
                         </div>
-                    ;`;
+                    `;
           container.appendChild(activityDiv);
 
           // Count pending requests for badge
@@ -149,7 +148,7 @@
 
       if (data.clubs && data.clubs.length > 0) {
         // Redirect to manage page of the first club
-        window.location.href = `/api/clubs/${data.clubs[0]._id}/manage /`;
+        window.location.href = `/api/clubs/${data.clubs[0]._id}/manage`;
       } else {
         alert("You do not own any clubs yet.");
       }
@@ -168,5 +167,4 @@
   // Load activity when page loads
   document.addEventListener("DOMContentLoaded", loadRecentActivity);
 </script>
-` %> <%- include('../layout', { title: title, userRole: userRole, body: body })
-%>
+` %> <%- include('../layout', { title: title, userRole: userRole, body: body })%>
