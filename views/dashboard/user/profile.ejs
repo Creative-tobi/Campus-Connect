@@ -1,0 +1,131 @@
+<!-- This file uses the layout.ejs -->
+<% title = 'Profile | CampusConnect' %> <% userRole = typeof user !==
+'undefined' ? user.role : 'user' %>
+<!-- <%- include('../layout', { title: title, userRole: userRole, body: body }) %> -->
+
+<% const body = `
+<div class="max-w-4xl mx-auto">
+  <div class="bg-white rounded-lg shadow p-6 mb-6">
+    <div class="flex items-center">
+      <!-- Profile Picture -->
+      <div
+        class="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16 mr-4"></div>
+      <!-- Replace with actual profile picture -->
+      <div>
+        <h1 class="text-xl font-bold text-gray-900">
+          ` + (typeof user !== 'undefined' ? user.firstName + ' ' +
+          user.lastName : 'User Name') + `
+        </h1>
+        <p class="text-gray-600">
+          ` + (typeof user !== 'undefined' ? user.faculty : 'Faculty
+          Information') + `
+        </p>
+        <p class="text-sm text-gray-500">
+          ` + (typeof user !== 'undefined' ? user.email : 'user@example.com') +
+          `
+        </p>
+      </div>
+    </div>
+    <div class="mt-4">
+      <button
+        id="editProfileBtn"
+        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+        Edit Profile
+      </button>
+      <button
+        id="uploadPictureBtn"
+        class="ml-2 bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-md text-sm font-medium">
+        Upload Picture
+      </button>
+    </div>
+  </div>
+
+  <!-- Joined Clubs Section -->
+  <div class="bg-white rounded-lg shadow p-6">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4">Clubs You're In</h2>
+    <div id="joinedClubsList">
+      <!-- Clubs will be populated by JavaScript -->
+      <p class="text-gray-500">Loading clubs...</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Example: Fetch user's joined clubs
+  async function loadJoinedClubs() {
+    try {
+      const response = await fetch("/api/users/clubs/joined");
+      if (!response.ok) throw new Error("Failed to fetch clubs");
+      const data = await response.json();
+      const container = document.getElementById("joinedClubsList");
+      container.innerHTML = ""; // Clear loading message
+
+      if (data.clubs && data.clubs.length > 0) {
+        data.clubs.forEach((club) => {
+          const clubDiv = document.createElement("div");
+          clubDiv.className = "border rounded-lg p-4 mb-2 hover:bg-gray-50";
+          clubDiv.innerHTML = `
+                        <h3 class="font-medium text-gray-900">${club.name}</h3>
+                        <p class="text-sm text-gray-500">${club.description}</p>
+                        <button onclick="leaveClub('${club._id}')" class="mt-2 text-sm text-red-600 hover:text-red-800">Leave Club</button>
+                    `;
+          container.appendChild(clubDiv);
+        });
+      } else {
+        container.innerHTML =
+          '<p class="text-gray-500">You are not a member of any clubs yet.</p>';
+      }
+    } catch (error) {
+      console.error("Error loading clubs:", error);
+      document.getElementById("joinedClubsList").innerHTML =
+        '<p class="text-red-500">Error loading clubs.</p>';
+    }
+  }
+
+  // Example: Leave club function
+  async function leaveClub(clubId) {
+    if (confirm("Are you sure you want to leave this club?")) {
+      try {
+        const response = await fetch(`/api/users/clubs/${clubId}/leave/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + sessionStorage.getItem('token') // Assuming token is stored in sessionStorage
+                    }
+                });
+        if (response.ok) {
+          alert("Successfully left the club.");
+          loadJoinedClubs(); // Reload the list
+        } else {
+          const errorData = await response.json();
+          alert("Error: " + errorData.error);
+        }
+      } catch (error) {
+        console.error("Error leaving club:", error);
+        alert("An error occurred while trying to leave the club.");
+      }
+    }
+  }
+
+  // Example: Edit profile button action
+  document
+    .getElementById("editProfileBtn")
+    .addEventListener("click", function () {
+      // Redirect to profile edit page or open modal
+      alert("Redirecting to profile edit page... (Implementation needed)");
+      // window.location.href = '/api/users/profile/edit';
+    });
+
+  // Example: Upload picture button action
+  document
+    .getElementById("uploadPictureBtn")
+    .addEventListener("click", function () {
+      // Open file input or modal for upload
+      alert("Opening picture upload... (Implementation needed)");
+      // You can trigger a hidden file input here
+    });
+
+  // Load clubs when page loads
+  document.addEventListener("DOMContentLoaded", loadJoinedClubs);
+</script>
+` %> <%- include('../layout', { title: title, userRole: userRole, body: body })
+%>

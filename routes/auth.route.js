@@ -12,8 +12,14 @@ const {
 } = require('../controllers/auth.controller');
 
 // Public routes
-router.post('/register', registerUser);
+router.get('/login', (req, res) => {
+    res.render('auth/login');
+});
 router.post('/login', loginUser);
+router.get('/register', (req, res) => {
+    res.render('auth/register');
+});
+router.post('/register', registerUser);
 router.post('/verify-otp', verifyOtpController);
 router.post('/regenerate-otp', regenerateOtpController);
 

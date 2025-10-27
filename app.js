@@ -1,39 +1,8 @@
-// const express = require("express");
-// const dotenv = require("dotenv");
-// const connectDB = require("./config/db");
-// const bodyparser = require("body-parser");
-// const path = require("path");
-// dotenv.config();
-// const sendMail = require("./services/nodemailer");
-
-// connectDB();
-
-// const PORT = process.env.PORT || 3000;
-
-// const app = express();
-
-// app.set("view engine", "ejs");
-// app.use(bodyparser.urlencoded({ extended: true }));
-// app.use(bodyparser.json());
-
-// app.use(express.static("public"))
-
-// app.set("views", path.join(__dirname, "views"));
-
-// // app.use("/", require("./routes/router"));
-// app.get('/', (req, res) => {
-//   res.render('index'); 
-// });
-
-// app.listen(PORT, () => {
-//   console.log(`Server running ${PORT}`);
-// });
-
-// app.js (updated for Campus Connect)
 const express = require("express");
-// const cors = require("cors");
 const dotenv = require("dotenv");
+const path = require("path");
 const connectDB = require("./config/db");
+const bodyparser = require("body-parser");
 require("./config/cloudinary"); // Initialize Cloudinary configuration
 
 dotenv.config();
@@ -75,18 +44,31 @@ const createInitialAdmin = async () => {
   await connectDB();
   await createInitialAdmin(); // Ensure admin exists before starting server
 
-  const app = express({limit: '50mb' });
+  const app = express({ limit: "50mb" });
 
   // app.use(cors({ origin: "*", credentials: true }));
 
   app.use(express.json());
-  app.use(express.urlencoded({ limit: '50mb', extended: true }));
+  app.use(express.urlencoded({ limit: "50mb", extended: true }));
+
+  app.set("view engine", "ejs");
+  app.use(bodyparser.urlencoded({ extended: true }));
+  app.use(bodyparser.json());
+
+  app.use(express.static("public"));
+
+  app.set("views", path.join(__dirname, "views"));
+
+  //  app.use("/", require("./routes/router"));
+  //  app.get('/', (req, res) => {
+  //  res.render('index');
+  // });
 
   // Route loading with error handling
   console.log("Loading auth routes...");
   try {
     const authroutes = require("./routes/auth.route");
-    app.use('/api/auth', authroutes);
+    app.use("/api/auth", authroutes);
     console.log("✅ Auth routes loaded successfully");
   } catch (error) {
     console.log("❌ Error in auth routes:", error.message);
@@ -95,8 +77,8 @@ const createInitialAdmin = async () => {
 
   console.log("Loading user routes...");
   try {
-    const userroutes = require("./routes/user.route");
-    app.use('/api/users', userroutes);
+    const userroutes = require("./routes/User.route");
+    app.use("/api/users", userroutes);
     console.log("✅ User routes loaded successfully");
   } catch (error) {
     console.log("❌ Error in user routes:", error.message);
@@ -106,7 +88,7 @@ const createInitialAdmin = async () => {
   console.log("Loading club routes...");
   try {
     const clubroutes = require("./routes/club.route");
-    app.use('/api/clubs', clubroutes);
+    app.use("/api/clubs", clubroutes);
     console.log("✅ Club routes loaded successfully");
   } catch (error) {
     console.log("❌ Error in club routes:", error.message);
@@ -116,7 +98,7 @@ const createInitialAdmin = async () => {
   console.log("Loading admin routes...");
   try {
     const adminroutes = require("./routes/admin.route");
-    app.use('/api/admin', adminroutes);
+    app.use("/api/admin", adminroutes);
     console.log("✅ Admin routes loaded successfully");
   } catch (error) {
     console.log("❌ Error in admin routes:", error.message);
@@ -126,19 +108,21 @@ const createInitialAdmin = async () => {
   console.log("Loading notification routes...");
   try {
     const notificationroutes = require("./routes/notification.route");
-    app.use('/api/notifications', notificationroutes);
+    app.use("/api/notifications", notificationroutes);
     console.log("✅ Notification routes loaded successfully");
   } catch (error) {
     console.log("❌ Error in notification routes:", error.message);
     process.exit(1);
   }
 
-  app.get("/", (req, res) => res.json({ message: "Campus Connect API is running successfully!" }));
+  app.get("/", (req, res) => {
+    res.render('index');
+  });
 
   // Error handling middleware
   app.use((err, req, res, next) => {
-      console.error("❌ Server Error:", err.stack);
-      res.status(500).json({ error: 'Something went wrong!' });
+    console.error("❌ Server Error:", err.stack);
+    res.status(500).json({ error: "Something went wrong!" });
   });
 
   const PORT = process.env.PORT;

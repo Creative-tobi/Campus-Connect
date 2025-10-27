@@ -22,11 +22,17 @@ router.get('/active', getActiveClubs);
 
 // Protected routes for club owners
 router.post('/', authenticate, authorize('user'), uploadClubImageMiddleware, createClub); // User creates club, becomes owner
-router.get('/my', authenticate, authorize('club_owner'), getMyClubs);
+router.get('/my', authenticate, authorize('club_owner'), (req, res) => {
+    res.render('dashboard/club_owner/dashboard');
+});
 router.put('/:id', authenticate, authorize('club_owner'), uploadClubImageMiddleware, updateClub);
 router.delete('/:id', authenticate, authorize('club_owner'), deleteClub);
-router.get('/:id', authenticate, authorize('user', 'club_owner', 'admin'), getClubById); // Anyone can view a club
-router.get('/:id/requests', authenticate, authorize('club_owner'), getJoinRequests);
+router.get('/:id', authenticate, authorize('user', 'club_owner', 'admin'), (req, res) => {
+    res.render('dashboard/club_owner/club/detail');
+}); // Anyone can view a club
+router.get('/:id/requests', authenticate, authorize('club_owner'), (req, res) => {
+    res.render('dashboard/club_owner/club/manage');
+});
 router.put('/:id/requests/:requestId', authenticate, authorize('club_owner'), respondToJoinRequest);
 router.get('/:id/members', authenticate, authorize('user', 'club_owner', 'admin'), getClubMembers);
 

@@ -1,0 +1,228 @@
+<!-- This file uses the layout.ejs -->
+<% title = 'Club Detail | CampusConnect' %>
+<% userRole = typeof club !== 'undefined' ? (club.owner.toString() === user._id.toString() ? 'club_owner' : 'user') : 'user' %>
+<%- include('../../layout', { title: title, userRole: userRole, body: body }) %>
+
+<% const body = `
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+        <!-- Club Header -->
+        <div class="mb-4">
+            <div class="bg-gray-200 border-2 border-dashed rounded-xl w-full h-48 mb-4"></div> <!-- Banner -->
+            <div class="flex items-start">
+                <div class="bg-gray-200 border-2 border-dashed rounded-xl w-24 h-24 mr-4 -mt-12 border-4 border-white"></div> <!-- Logo -->
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">` + (typeof club !== 'undefined' ? club.name : 'Club Name') + `</h1>
+                    <p class="text-gray-600">` + (typeof club !== 'undefined' ? club.description : 'Club Description') + `</p>
+                    <div class="flex items-center text-sm text-gray-500 mt-1">
+                        <i class="fas fa-users mr-1"></i>
+                        <span>` + (typeof club !== 'undefined' ? club.members.length : '0') + ` members</span>
+                        <span class="mx-2">•</span>
+                        <span>` + (typeof club !== 'undefined' ? club.category : 'Category') + `</span>
+                        <span class="mx-2">•</span>
+                        <span>Status: ` + (typeof club !== 'undefined' ? club.status : 'Unknown') + `</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex space-x-4">
+            <% if (typeof user !== 'undefined' && typeof club !== 'undefined') { %>
+                <% if (club.owner.toString() === user._id.toString()) { %>
+                    <!-- Club Owner Actions -->
+                    <button id="editClubBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                        Edit Club
+                    </button>
+                    <button id="manageClubBtn" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                        Manage Club
+                    </button>
+                    <button id="deleteClubBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                        Delete Club
+                    </button>
+                <% } else { %>
+                    <!-- Member/Non-Member Actions -->
+                    <% const isMember = typeof club !== 'undefined' && club.members.some(m => m.user.toString() === user._id.toString()); %>
+                    <% if (isMember) { %>
+                        <button id="leaveClubBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                            Leave Club
+                        </button>
+                    <% } else { %>
+                        <button id="joinClubBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                            Request to Join
+                        </button>
+                    <% } %>
+                <% } %>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- Club Posts Feed -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Club Feed</h2>
+        <div id="clubPosts">
+            <!-- Posts will be populated by JavaScript -->
+            <p class="text-gray-500">Loading posts...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    const clubId = '<%= typeof club !== "undefined" ? club._id : "" %>'; // Pass club ID from backend or set dynamically
+    const userId = '<%= typeof user !== "undefined" ? user._id : "" %>'; // Pass user ID from backend or set dynamically
+    const isOwner = `<%= typeof club !== "undefined" && typeof user !== "undefined" && club.owner.toString() === user._id.toString() ? 'true' : 'false' %>`;
+
+    // Example: Fetch club posts
+    async function loadClubPosts() {
+        try {
+            const response = await fetch(`/api/clubs/${clubId}/posts /`);
+            if (!response.ok) throw new Error('Failed to fetch posts');
+            const data = await response.json();
+            const container = document.getElementById('clubPosts');
+            container.innerHTML = ''; // Clear loading message
+
+            if (data.posts && data.posts.length > 0) {
+                data.posts.forEach(post => {
+                    const postDiv = document.createElement('div');
+                    postDiv.className = 'border-b border-gray-200 pb-4 mb-4 last:border-0 last:mb-0';
+                    postDiv.innerHTML = `\
+                        <div class="flex items-start mb-2">
+                            <div class="bg-gray-200 border-2 border-dashed rounded-xl w-8 h-8 mr-3"></div>
+                            <div>
+                                <h3 class="font-semibold text-gray-900">${post.author.name}</h3>
+                                <p class="text-xs text-gray-500">${new Date(post.createdAt).toLocaleString()}</p>
+                            </div>
+                        </div>
+                        <div class="ml-11">
+                            <p class="text-gray-800">${post.content}</p>
+                            <!-- Handle post image/banner if present -->
+                            ${post.image ? '<div class="mt-2 bg-gray-200 border-2 border-dashed rounded-xl w-full h-48"></div>' : ''}
+                            <div class="mt-2 flex space-x-4 text-gray-500 text-sm">
+                                <button class="flex items-center hover:text-gray-700">
+                                    <i class="far fa-thumbs-up mr-1"></i> Like
+                                </button>
+                                <button class="flex items-center hover:text-gray-700">
+                                    <i class="far fa-comment mr-1"></i> Comment
+                                </button>
+                                ${isOwner === 'true' ? `<button onclick="deletePost('${post._id}')" class="flex items-center text-red-500 hover:text-red-700 ml-auto">
+                                    <i class="fas fa-trash mr-1"></i> Delete
+                                </button>` : ''}
+                            </div>
+                        </div>
+                    ;/`
+                    container.appendChild(postDiv);
+                });
+            } else {
+                container.innerHTML = '<p class="text-gray-500">No posts yet.</p>';
+            }
+        } catch (error) {
+            console.error('Error loading posts:', error);
+            document.getElementById('clubPosts').innerHTML = '<p class="text-red-500">Error loading posts.</p>';
+        }
+    }
+
+    // Example: Join/Leave/Delete Club functions (similar to profile)
+    document.getElementById('joinClubBtn').addEventListener('click', async function() {
+        try {
+            const response = await fetch(`/api/users/clubs/${clubId}/join /`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                }
+            });
+            if (response.ok) {
+                alert('Join request sent successfully!');
+                // Reload page or update UI
+                window.location.reload();
+            } else {
+                const errorData = await response.json();
+                alert('Error: ' + errorData.error);
+            }
+        } catch (error) {
+            console.error('Error sending join request:', error);
+            alert('An error occurred.');
+        }
+    });
+
+    document.getElementById('leaveClubBtn').addEventListener('click', async function() {
+        if (confirm('Are you sure you want to leave this club?')) {
+             try {
+                const response = await fetch(`/api/users/clubs/${clubId}/leave /`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    }
+                });
+                if (response.ok) {
+                    alert('Successfully left the club.');
+                    window.location.reload();
+                } else {
+                    const errorData = await response.json();
+                    alert('Error: ' + errorData.error);
+                }
+            } catch (error) {
+                console.error('Error leaving club:', error);
+                alert('An error occurred.');
+            }
+        }
+    });
+
+    document.getElementById('deleteClubBtn').addEventListener('click', async function() {
+        if (confirm('Are you sure you want to delete this club? This action cannot be undone.')) {
+             try {
+                const response = await fetch(`/api/clubs/${clubId} /`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    }
+                });
+                if (response.ok) {
+                    alert('Club deleted successfully.');
+                    window.location.href = '/api/clubs/my'; // Redirect to my clubs
+                } else {
+                    const errorData = await response.json();
+                    alert('Error: ' + errorData.error);
+                }
+            } catch (error) {
+                console.error('Error deleting club:', error);
+                alert('An error occurred.');
+            }
+        }
+    });
+
+    document.getElementById('editClubBtn').addEventListener('click', function() {
+        window.location.href = `/api/clubs/${clubId}/edit /`;
+    });
+
+    document.getElementById('manageClubBtn').addEventListener('click', function() {
+        window.location.href = `/api/clubs/${clubId}/manage/`;
+    });
+
+    // Example: Delete Post function
+    async function deletePost(postId) {
+        if (confirm('Are you sure you want to delete this post?')) {
+            try {
+                const response = await fetch(`/api/clubs/${clubId}/posts/${postId}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    }
+                });
+                if (response.ok) {
+                    alert('Post deleted successfully.');
+                    loadClubPosts(); // Reload posts
+                } else {
+                    const errorData = await response.json();
+                    alert('Error: ' + errorData.error);
+                }
+            } catch (error) {
+                console.error('Error deleting post:', error);
+                alert('An error occurred.');
+            }
+        }
+    }
+
+    // Load posts when page loads
+    document.addEventListener('DOMContentLoaded', loadClubPosts);
+</script>
+` %>

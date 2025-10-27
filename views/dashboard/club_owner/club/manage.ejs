@@ -1,0 +1,174 @@
+<!-- This file uses the layout.ejs -->
+<% title = 'Manage Club | CampusConnect' %> <% userRole = 'club_owner' %> <%-
+include('../../layout', { title: title, userRole: userRole, body: body }) %> <%
+const body = `
+<div class="max-w-4xl mx-auto">
+  <div class="bg-white rounded-lg shadow p-6 mb-6">
+    <h1 class="text-xl font-bold text-gray-900">
+      Manage Club: ` + (typeof club !== 'undefined' ? club.name : 'Club Name') +
+      `
+    </h1>
+    <p class="text-gray-600">Manage members, requests, and posts.</p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Member Requests -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Join Requests</h2>
+      <div id="joinRequestsList">
+        <!-- Requests will be populated by JavaScript -->
+        <p class="text-gray-500">Loading requests...</p>
+      </div>
+    </div>
+
+    <!-- Club Members -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Club Members</h2>
+      <div id="clubMembersList">
+        <!-- Members will be populated by JavaScript -->
+        <p class="text-gray-500">Loading members...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const clubId = '<%= typeof club !== "undefined" ? club._id : "" %>';
+
+  const response = await fetch(`/api/clubs/${clubId}/requests`);
+  // Example: Fetch join requests
+  async function loadJoinRequests() {
+    try {
+      const response = await fetch(`/api/clubs/${clubId}/requests /`);
+      if (!response.ok) throw new Error("Failed to fetch requests");
+      const data = await response.json();
+      const container = document.getElementById("joinRequestsList");
+      container.innerHTML = ""; // Clear loading message
+
+      if (data.requests && data.requests.length > 0) {
+        data.requests.forEach((request) => {
+          const requestDiv = document.createElement("div");
+          requestDiv.className = "border rounded-lg p-4 mb-2";
+          requestDiv.innerHTML = `\
+                        <div class="flex items-center">
+                            <div class="bg-gray-200 border-2 border-dashed rounded-xl w-8 h-8 mr-3"></div>
+                            <div class="flex-1">
+                                <h3 class="font-medium text-gray-900">${request.user.firstName} ${request.user.lastName}</h3>
+                                <p class="text-sm text-gray-500">${request.user.email}</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="respondToRequest('${request._id}', 'accept')" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md text-sm">Accept</button>
+                                <button onclick="respondToRequest('${request._id}', 'reject')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-sm">Reject</button>
+                            </div>
+                        </div>
+                    ;/`;
+          container.appendChild(requestDiv);
+        });
+      } else {
+        container.innerHTML =
+          '<p class="text-gray-500">No pending requests.</p>';
+      }
+    } catch (error) {
+      console.error("Error loading requests:", error);
+      document.getElementById("joinRequestsList").innerHTML =
+        '<p class="text-red-500">Error loading requests.</p>';
+    }
+  }
+
+  // Example: Fetch club members
+  async function loadClubMembers() {
+    try {
+      const response = await fetch(`/api/clubs/${clubId}/members /`);
+      if (!response.ok) throw new Error("Failed to fetch members");
+      const data = await response.json();
+      const container = document.getElementById("clubMembersList");
+      container.innerHTML = ""; // Clear loading message
+
+      if (data.members && data.members.length > 0) {
+        data.members.forEach((member) => {
+          const memberDiv = document.createElement("div");
+          memberDiv.className = "border rounded-lg p-4 mb-2 flex items-center";
+          memberDiv.innerHTML =
+            `
+                        <div class="bg-gray-200 border-2 border-dashed rounded-xl w-8 h-8 mr-3"></div>
+                        <div class="flex-1">
+                            <h3 class="font-medium text-gray-900">${member.user.firstName} ${member.user.lastName}</h3>
+                            <p class="text-sm text-gray-500">${member.user.email}</p>
+                        </div>
+                        \${member.user._id !== '` +
+            (typeof user !== "undefined" ? user._id : "") +
+            `' ? \`<button onclick="removeMember('${member.user._id}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-sm">Remove</button>\` : ''}
+                    `;
+          container.appendChild(memberDiv);
+        });
+      } else {
+        container.innerHTML = '<p class="text-gray-500">No members yet.</p>';
+      }
+    } catch (error) {
+      console.error("Error loading members:", error);
+      document.getElementById("clubMembersList").innerHTML =
+        '<p class="text-red-500">Error loading members.</p>';
+    }
+  }
+
+  // Example: Respond to request
+  async function respondToRequest(requestId, action) {
+    try {
+      const response =
+        await fetch(`/api/clubs/${clubId}/requests/${requestId}/`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                },
+                body: JSON.stringify({ action: action })
+            });
+
+      if (response.ok) {
+        alert(`/ Request/${action}ed successfully./`);
+        loadJoinRequests(); // Reload requests
+        loadClubMembers(); // Reload members if accepted
+      } else {
+        const errorData = await response.json();
+        alert("Error: " + errorData.error);
+      }
+    } catch (error) {
+      console.error("Error responding to request:", error);
+      alert("An error occurred.");
+    }
+  }
+
+  // Example: Remove member
+  async function removeMember(memberId) {
+    if (confirm("Are you sure you want to remove this member?")) {
+      try {
+        const response =
+          await fetch(`/api/clubs/${clubId}/members/${memberId}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    }
+                });
+
+        if (response.ok) {
+          alert("Member removed successfully.");
+          loadClubMembers(); // Reload members
+        } else {
+          const errorData = await response.json();
+          alert("Error: " + errorData.error);
+        }
+      } catch (error) {
+        console.error("Error removing member:", error);
+        alert("An error occurred.");
+      }
+    }
+  }
+
+  // Load requests and members when page loads
+  document.addEventListener("DOMContentLoaded", () => {
+    loadJoinRequests();
+    loadClubMembers();
+  });
+</script>
+` %> <%- include('../layout', { title: title, userRole: userRole, body: body })
+%>

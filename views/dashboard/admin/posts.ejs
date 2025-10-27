@@ -1,0 +1,145 @@
+<!-- This file uses the layout.ejs -->
+<% title = 'Manage Posts | CampusConnect' %> <% userRole = 'admin' %>
+<!-- <%- include('../layout', { title: title, userRole: userRole, body: body }) %> -->
+
+<% const body = `
+<div class="max-w-6xl mx-auto">
+  <div class="bg-white rounded-lg shadow p-6 mb-6">
+    <h1 class="text-xl font-bold text-gray-900">Manage Posts</h1>
+    <p class="text-gray-600">View and delete posts.</p>
+  </div>
+
+  <div class="bg-white rounded-lg shadow p-6">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Author
+            </th>
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Club
+            </th>
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Content
+            </th>
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Date
+            </th>
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody id="postsTableBody" class="bg-white divide-y divide-gray-200">
+          <!-- Posts will be populated by JavaScript -->
+          <tr>
+            <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+              Loading posts...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Example: Fetch all posts
+  async function loadPosts() {
+    try {
+      const response = await fetch("/api/admin/posts");
+      if (!response.ok) throw new Error("Failed to fetch posts");
+      const data = await response.json();
+      const tbody = document.getElementById("postsTableBody");
+      tbody.innerHTML = ""; // Clear loading message
+
+      if (data.posts && data.posts.length > 0) {
+        data.posts.forEach((post) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `\
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="bg-gray-200 border-2 border-dashed rounded-xl w-8 h-8 mr-3"></div>
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">${
+                                      post.author.name
+                                    }</div>
+                                    <div class="text-sm text-gray-500">${
+                                      post.author.email
+                                    }</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${
+                          post.club.name
+                        }</td>
+                        <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">${
+                          post.content
+                        }</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${new Date(
+                          post.createdAt
+                        ).toLocaleString()}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <button onclick="deletePost('${
+                              post._id
+                            }')" class="text-red-600 hover:text-red-900">Delete</button>
+                        </td>
+                    `;
+          tbody.appendChild(row);
+        });
+      } else {
+        tbody.innerHTML =
+          '<tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">No posts found.</td></tr>';
+      }
+    } catch (error) {
+      console.error("Error loading posts:", error);
+      document.getElementById("postsTableBody").innerHTML =
+        '<tr><td colspan="5" class="px-6 py-4 text-center text-red-500">Error loading posts.</td></tr>';
+    }
+  }
+
+  // Example: Delete post
+  async function deletePost(postId) {
+    if (
+      confirm(
+        "Are you sure you want to delete this post? This action cannot be undone."
+      )
+    ) {
+      try {
+        const response = await fetch(`/api/admin/posts/${postId}/`, {
+          method: "DELETE",
+          headers: {
+            Authorization: "Bearer " + sessionStorage.getItem("token"),
+          },
+        });
+
+        if (response.ok) {
+          alert("Post deleted successfully.");
+          loadPosts(); // Reload table
+        } else {
+          const errorData = await response.json();
+          alert("Error: " + errorData.error);
+        }
+      } catch (error) {
+        console.error("Error deleting post:", error);
+        alert("An error occurred.");
+      }
+    }
+  }
+
+  // Load posts when page loads
+  document.addEventListener("DOMContentLoaded", loadPosts);
+</script>
+`%> <%- include('../layout', { title: title, userRole: userRole, body: body })
+%>
