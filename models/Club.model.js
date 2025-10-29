@@ -48,7 +48,7 @@ const clubSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: ['pending', 'active', 'rejected'],
-        default: 'pending' // Requires admin approval
+        default: 'active' // Clubs are active by default
     },
     memberCount: {
         type: Number,

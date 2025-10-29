@@ -193,7 +193,7 @@ const searchClubs = async (req, res) => {
   try {
     const { search, category, page = 1, limit = 10 } = req.query;
 
-    let query = { status: "active" }; // Only active clubs
+    let query = {}; // Show all clubs for testing
     if (search) {
       query.$or = [
         { name: { $regex: search, $options: "i" } },
@@ -321,10 +321,38 @@ const getUserPosts = async (req, res) => {
   }
 };
 
+const getUserProfile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const user = await User.findById(userId).select("-password");
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Get joined clubs count
+    const joinedClubsCount = await Club.countDocuments({
+      members: { $elemMatch: { user: userId } },
+    });
+
+    // Get user's posts count
+    const userPostsCount = await Post.countDocuments({ author: userId });
+
+    res.render("dashboard/user/profile", {
+      user,
+      joinedClubsCount,
+      userPostsCount,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 // Export the multer upload middleware for use in the route
 module.exports = {
   getDashboard,
   getUserPosts,
+  getUserProfile,
   // joinClub, // Note: This logic is simplified, see comments in function
   sendJoinRequest,
   leaveClub,

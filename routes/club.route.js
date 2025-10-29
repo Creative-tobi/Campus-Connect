@@ -20,6 +20,11 @@ const {
 // Public route for active clubs
 router.get("/active", getActiveClubs);
 
+// Route for users to access create club page
+router.get("/create", authenticate, authorize("user"), (req, res) => {
+  res.render("dashboard/club_owner/club/create");
+});
+
 // Protected routes for club owners
 router.post(
   "/",

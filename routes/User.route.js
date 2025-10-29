@@ -4,6 +4,7 @@ const { authenticate, authorize } = require("../middleware/auth");
 const {
   getDashboard,
   getUserPosts,
+  getUserProfile,
   sendJoinRequest,
   leaveClub,
   getJoinedClubs,
@@ -37,7 +38,7 @@ router.delete(
 router.get(
   "/clubs/joined",
   authenticate,
-  authorize("user", "club_owner"),
+  authorize("user", "club_owner", "admin"),
   getJoinedClubs
 );
 router.get(
@@ -77,6 +78,13 @@ router.get(
   authenticate,
   authorize("user", "club_owner"),
   getUserPosts
+);
+
+router.get(
+  "/profile",
+  authenticate,
+  authorize("user", "club_owner", "admin"),
+  getUserProfile
 );
 
 module.exports = router;
