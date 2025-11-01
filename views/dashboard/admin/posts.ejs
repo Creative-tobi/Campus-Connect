@@ -1,8 +1,6 @@
 <!-- This file uses the layout.ejs -->
-<% title = 'Manage Posts | CampusConnect' %> <% userRole = 'admin' %>
-<!-- <%- include('../layout', { title: title, userRole: userRole, body: body }) %> -->
-
-<% const body = `
+<% title = 'Manage Posts | CampusConnect' %> <% userRole = 'admin' %> <%-
+include('../layout', { title: title, userRole: userRole, body: `
 <div class="max-w-6xl mx-auto">
   <div class="bg-white rounded-lg shadow p-6 mb-6">
     <h1 class="text-xl font-bold text-gray-900">Manage Posts</h1>
@@ -58,7 +56,7 @@
   // Example: Fetch all posts
   async function loadPosts() {
     try {
-      const response = await fetch("/api/admin/posts");
+      const response = await fetch("/api/admin/posts/data");
       if (!response.ok) throw new Error("Failed to fetch posts");
       const data = await response.json();
       const tbody = document.getElementById("postsTableBody");
@@ -67,35 +65,21 @@
       if (data.posts && data.posts.length > 0) {
         data.posts.forEach((post) => {
           const row = document.createElement("tr");
-          row.innerHTML = `\
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <div class="bg-gray-200 border-2 border-dashed rounded-xl w-8 h-8 mr-3"></div>
-                                <div>
-                                    <div class="text-sm font-medium text-gray-900">${
-                                      post.author.name
-                                    }</div>
-                                    <div class="text-sm text-gray-500">${
-                                      post.author.email
-                                    }</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${
-                          post.club.name
-                        }</td>
-                        <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">${
-                          post.content
-                        }</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${new Date(
-                          post.createdAt
-                        ).toLocaleString()}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <button onclick="deletePost('${
-                              post._id
-                            }')" class="text-red-600 hover:text-red-900">Delete</button>
-                        </td>
-                    `;
+          row.innerHTML = '<td class="px-6 py-4 whitespace-nowrap">' +
+            '<div class="flex items-center">' +
+              '<div class="bg-gray-200 border-2 border-dashed rounded-xl w-8 h-8 mr-3"></div>' +
+              '<div>' +
+                '<div class="text-sm font-medium text-gray-900">' + (post.author.firstName + " " + post.author.lastName) + '</div>' +
+                '<div class="text-sm text-gray-500">' + post.author.email + '</div>' +
+              '</div>' +
+            '</div>' +
+            '</td>' +
+            '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">' + post.club.name + '</td>' +
+            '<td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">' + post.content + '</td>' +
+            '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">' + new Date(post.createdAt).toLocaleString() + '</td>' +
+            '<td class="px-6 py-4 whitespace-nowrap text-sm font-medium">' +
+              '<button onclick="deletePost(\'' + post._id + '\')" class="text-red-600 hover:text-red-900">Delete</button>' +
+            '</td>';
           tbody.appendChild(row);
         });
       } else {
@@ -117,7 +101,7 @@
       )
     ) {
       try {
-        const response = await fetch(`/api/admin/posts/${postId}`, {
+        const response = await fetch("/api/admin/posts/" + postId, {
           method: "DELETE",
           headers: {
             Authorization: "Bearer " + sessionStorage.getItem("token"),
@@ -141,5 +125,4 @@
   // Load posts when page loads
   document.addEventListener("DOMContentLoaded", loadPosts);
 </script>
-`%> <%- include('../layout', { title: title, userRole: userRole, body: body })
-%>
+` }) %>

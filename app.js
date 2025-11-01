@@ -19,7 +19,7 @@ const createInitialAdmin = async () => {
             return;
         }
 
-        const hashedPassword = await bcrypt.hash('Latest5678', 12);
+        const hashedPassword = await bcrypt.hash('the n', 12);
 
         const adminUser = new User({
             firstName: 'Lateef',
@@ -117,6 +117,10 @@ const createInitialAdmin = async () => {
 
   app.get("/", (req, res) => {
     res.render('index');
+  });
+
+  app.get("/clubs", (req, res) => {
+    res.render("dashboard/user/clubs", { title: 'Clubs | CampusConnect' });
   });
 
   // Error handling middleware

@@ -183,7 +183,22 @@ const getClubDetails = async (req, res) => {
       return res.status(404).json({ error: "Club is not active" });
     }
 
-    res.render("dashboard/club_owner/club/detail", { club });
+    // Check if this is an API request (has Accept header for JSON or query param)
+    if (
+      (req.headers.accept && req.headers.accept.includes("application/json")) ||
+      req.query.format === "json" ||
+      req.xhr
+    ) {
+      // API request - return JSON data
+      return res.json({ club });
+    } else {
+      // Page request - render the view
+      if (req.user.role === "user") {
+        res.render("dashboard/user/clubs", { club });
+      } else {
+        res.render("dashboard/club_owner/club/detail", { club });
+      }
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -193,7 +208,7 @@ const searchClubs = async (req, res) => {
   try {
     const { search, category, page = 1, limit = 10 } = req.query;
 
-    let query = {}; // Show all clubs for testing
+    let query = { status: "active" };
     if (search) {
       query.$or = [
         { name: { $regex: search, $options: "i" } },
@@ -229,7 +244,7 @@ const searchClubs = async (req, res) => {
 const getNotifications = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { read = "false", limit = 10 } = req.query; // Get unread by default
+    const { page = 1, limit = 10, read } = req.query;
 
     let query = { recipient: userId };
     if (read === "true") {
@@ -239,12 +254,23 @@ const getNotifications = async (req, res) => {
     }
     // If read is not specified, get all
 
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const total = await Notification.countDocuments(query);
     const notifications = await Notification.find(query)
       .populate("relatedObjectId", "name title firstName lastName") // Populate depending on type
       .sort({ createdAt: -1 })
+      .skip(skip)
       .limit(parseInt(limit));
 
-    res.json({ notifications });
+    res.json({
+      notifications,
+      pagination: {
+        current: parseInt(page),
+        pages: Math.ceil(total / parseInt(limit)),
+        total,
+        limit: parseInt(limit),
+      },
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -321,6 +347,38 @@ const getUserPosts = async (req, res) => {
   }
 };
 
+const updateUserProfile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { firstName, lastName, faculty, phone } = req.body;
+
+    // Validate required fields
+    if (!firstName || !lastName || !faculty || !phone) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    // Check if phone is unique (excluding current user)
+    const existingUser = await User.findOne({ phone, _id: { $ne: userId } });
+    if (existingUser) {
+      return res.status(400).json({ error: "Phone number already in use" });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { firstName, lastName, faculty, phone, updatedAt: Date.now() },
+      { new: true, runValidators: true }
+    ).select("-password");
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json({ message: "Profile updated successfully", user: updatedUser });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 const getUserProfile = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -353,6 +411,7 @@ module.exports = {
   getDashboard,
   getUserPosts,
   getUserProfile,
+  updateUserProfile,
   // joinClub, // Note: This logic is simplified, see comments in function
   sendJoinRequest,
   leaveClub,

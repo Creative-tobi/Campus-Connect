@@ -128,6 +128,35 @@
         </div>
       </div>
 
+      <!-- Explore Clubs Section -->
+      <div class="py-12 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="lg:text-center">
+            <h2
+              class="text-base text-blue-600 font-semibold tracking-wide uppercase">
+              Explore Clubs
+            </h2>
+            <p
+              class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+              Discover Clubs on Campus
+            </p>
+            <p class="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
+              Find clubs that match your interests and connect with like-minded
+              students.
+            </p>
+          </div>
+
+          <div
+            id="clubsContainer"
+            class="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Clubs will be populated by JavaScript -->
+            <div class="text-center text-gray-500 py-8 col-span-full">
+              Loading clubs...
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Testimonials/Team Section (Example placeholder) -->
       <div class="py-12 bg-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -163,6 +192,7 @@
                 class="bg-gray-200 border-2 border-dashed rounded-full w-16 h-16 mx-auto mb-4"></div>
               <h3 class="text-lg font-semibold text-gray-900">Team Member 3</h3>
               <ul class="list-disc list-inside text-left text-gray-500 mt-2">
+                <img src="/assets/aissh.jpg" alt="">
                 <li>Role 1</li>
                 <li>Role 2</li>
               </ul>
@@ -201,5 +231,119 @@
         </p>
       </div>
     </footer>
+
+    <script>
+      async function loadClubs() {
+        try {
+          const response = await fetch("/api/clubs/active?limit=9");
+
+          if (!response.ok) throw new Error("Failed to fetch clubs");
+
+          const data = await response.json();
+          const container = document.getElementById("clubsContainer");
+          container.innerHTML = "";
+
+          if (data.clubs && data.clubs.length > 0) {
+            data.clubs.forEach((club) => {
+              const clubCard = document.createElement("div");
+              clubCard.className =
+                "bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow border-l-4 border-blue-500";
+
+              const logoHtml = club.logo
+                ? `<img src="${club.logo}" alt="${club.name}" class="w-full h-full object-cover rounded-lg">`
+                : '<i class="fas fa-users text-gray-400 text-2xl"></i>';
+
+              const description =
+                club.description.length > 100
+                  ? club.description.substring(0, 100) + "..."
+                  : club.description;
+
+              const memberText = club.memberCount === 1 ? "member" : "members";
+
+              // Category color mapping
+              const categoryColors = {
+                academic: "bg-green-100 text-green-800",
+                sports: "bg-orange-100 text-orange-800",
+                tech: "bg-purple-100 text-purple-800",
+                arts: "bg-pink-100 text-pink-800",
+                cultural: "bg-indigo-100 text-indigo-800",
+                political: "bg-red-100 text-red-800",
+                other: "bg-gray-100 text-gray-800",
+              };
+
+              const categoryColor =
+                categoryColors[club.category] || categoryColors["other"];
+
+              clubCard.innerHTML = `
+                <div class="flex items-start space-x-4">
+                  <div class="w-16 h-16 bg-gray-200 rounded-lg flex-shrink-0 flex items-center justify-center">
+                    ${logoHtml}
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <h3 class="text-xl font-semibold text-gray-900 truncate">${club.name}</h3>
+                    <p class="text-gray-600 mt-2">${description}</p>
+                    <div class="flex items-center justify-between mt-4">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${categoryColor}">${club.category}</span>
+                      <span class="text-sm text-gray-500">${club.memberCount} ${memberText}</span>
+                    </div>
+                    <div class="mt-4">
+                      <button onclick="joinClub('${club._id}')" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm">
+                        <i class="fas fa-plus mr-2"></i>Join Club
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              `;
+              container.appendChild(clubCard);
+            });
+          } else {
+            container.innerHTML =
+              '<div class="col-span-full text-center text-gray-500 py-8">No clubs available at the moment.</div>';
+          }
+        } catch (error) {
+          console.error("Error loading clubs:", error);
+          document.getElementById("clubsContainer").innerHTML =
+            '<div class="col-span-full text-center text-red-500 py-8">Error loading clubs.</div>';
+        }
+      }
+
+      async function joinClub(clubId) {
+        try {
+          const token = sessionStorage.getItem("token");
+          if (!token) {
+            // Redirect to login if not authenticated
+            window.location.href = "/api/auth/login";
+            return;
+          }
+
+          const response = await fetch(`/api/clubs/${clubId}/join`, {
+            method: "POST",
+            headers: {
+              Authorization: "Bearer " + token,
+              Accept: "application/json",
+            },
+          });
+
+          if (response.ok) {
+            alert("Successfully joined the club!");
+            // Reload clubs to update member count
+            loadClubs();
+          } else if (response.status === 401) {
+            // Token expired or invalid
+            sessionStorage.removeItem("token");
+            window.location.href = "/api/auth/login";
+          } else {
+            const errorData = await response.json();
+            alert(errorData.message || "Failed to join club");
+          }
+        } catch (error) {
+          console.error("Error joining club:", error);
+          alert("An error occurred while joining the club");
+        }
+      }
+
+      // Load clubs when page loads
+      document.addEventListener("DOMContentLoaded", loadClubs);
+    </script>
   </body>
 </html>

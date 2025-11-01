@@ -9,10 +9,11 @@ const notificationSchema = new mongoose.Schema({
     type: {
         type: String,
         required: true,
-        enum: [
+    enum: [
             'JOIN_REQUEST',
             'JOIN_APPROVED',
             'JOIN_DECLINED',
+            'CLUB_APPROVAL',
             'CLUB_APPROVED',
             'CLUB_REJECTED',
             'NEW_POST',

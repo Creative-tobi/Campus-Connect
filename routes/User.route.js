@@ -1,3 +1,4 @@
+const Club = require("../models/Club.model");
 const express = require("express");
 const router = express.Router();
 const { authenticate, authorize } = require("../middleware/auth");
@@ -5,6 +6,7 @@ const {
   getDashboard,
   getUserPosts,
   getUserProfile,
+  updateUserProfile,
   sendJoinRequest,
   leaveClub,
   getJoinedClubs,
@@ -26,13 +28,13 @@ router.get(
 router.post(
   "/clubs/:id/join",
   authenticate,
-  authorize("user", "club_owner"),
+  authorize("user", "club_owner", "admin"),
   sendJoinRequest
 );
 router.delete(
   "/clubs/:id/leave",
   authenticate,
-  authorize("user", "club_owner"),
+  authorize("user", "club_owner", "admin"),
   leaveClub
 );
 router.get(
@@ -44,20 +46,29 @@ router.get(
 router.get(
   "/clubs/:id",
   authenticate,
-  authorize("user", "club_owner"),
+  authorize("user", "club_owner", "admin"),
   getClubDetails
 );
-router.get(
-  "/clubs",
-  authenticate,
-  authorize("user", "club_owner"),
-  searchClubs
-);
+
+router.get("/clubs", searchClubs);
 router.get(
   "/notifications",
   authenticate,
   authorize("user", "club_owner", "admin"),
-  getNotifications
+  (req, res) => {
+    // Check if this is an API request (has Accept header for JSON or query param)
+    if (
+      (req.headers.accept && req.headers.accept.includes("application/json")) ||
+      req.query.format === "json" ||
+      req.xhr
+    ) {
+      // API request - return JSON data
+      return getNotifications(req, res);
+    } else {
+      // Page request - render the view
+      res.render("dashboard/user/notifications");
+    }
+  }
 );
 router.put(
   "/notifications/:id/read",
@@ -76,7 +87,7 @@ router.post(
 router.get(
   "/posts",
   authenticate,
-  authorize("user", "club_owner"),
+  authorize("user", "club_owner", "admin"),
   getUserPosts
 );
 
@@ -85,6 +96,22 @@ router.get(
   authenticate,
   authorize("user", "club_owner", "admin"),
   getUserProfile
+);
+router.put(
+  "/profile",
+  authenticate,
+  authorize("user", "club_owner", "admin"),
+  updateUserProfile
+);
+
+// Route to render the clubs page
+router.get(
+  "/clubs-page",
+  authenticate,
+  authorize("user", "club_owner", "admin"),
+  (req, res) => {
+    res.render("dashboard/user/clubs");
+  }
 );
 
 module.exports = router;
