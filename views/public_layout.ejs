@@ -22,11 +22,11 @@
   </head>
   <body class="bg-gray-100">
     <!-- Include Header -->
-    <%- include('./partials/header') %>
+    <%- include('./dashboard/partials/header') %>
 
     <div class="flex">
       <!-- Include Sidebar -->
-      <%- include('./partials/sidebar') %>
+      <%- include('./dashboard/partials/sidebar') %>
 
       <!-- Main Content Area -->
       <main
@@ -35,6 +35,22 @@
         <%- body %>
       </main>
     </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-4">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center">
+          <div>
+            <p>&copy; 2024 CampusConnect. All rights reserved.</p>
+          </div>
+          <div class="flex space-x-4">
+            <a href="#" class="hover:text-gray-300">Privacy Policy</a>
+            <a href="#" class="hover:text-gray-300">Terms of Service</a>
+            <a href="#" class="hover:text-gray-300">Contact Us</a>
+          </div>
+        </div>
+      </div>
+    </footer>
 
     <script>
       // Function to get user data from localStorage
@@ -53,10 +69,7 @@
         return sessionStorage.getItem("token") && getUserData();
       }
 
-      // Redirect to login if not authenticated (skip for clubs page)
-      if (!isAuthenticated() && !window.location.pathname.includes("/clubs")) {
-        window.location.href = "/api/auth/login";
-      }
+      // No redirect for public pages
 
       // Mobile sidebar toggle logic
       const sidebar = document.getElementById("sidebar");

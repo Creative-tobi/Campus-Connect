@@ -202,16 +202,40 @@ const getClubById = async (req, res) => {
       return res.status(404).json({ error: "Club not found" });
     }
 
-    // Only return details if active or if the requester is the owner/admin
-    if (
-      club.status !== "active" &&
-      club.owner._id.toString() !== req.user.id &&
-      req.user.role !== "admin"
-    ) {
-      return res.status(404).json({ error: "Club is not active" });
-    }
+    // Check if this is a public route (no authentication required for active clubs)
+    const isPublicRoute = req.route.path === "/public/:id";
 
-    res.render("dashboard/club_owner/club/detail", { club });
+    if (isPublicRoute) {
+      // For public route, only show active clubs
+      if (club.status !== "active") {
+        return res.status(404).json({ error: "Club not found" });
+      }
+      // Return JSON for public access
+      return res.json({ club });
+    } else {
+      // For authenticated route, check permissions
+      if (
+        club.status !== "active" &&
+        club.owner._id.toString() !== req.user.id &&
+        req.user.role !== "admin"
+      ) {
+        return res.status(404).json({ error: "Club is not active" });
+      }
+
+      // Check if this is an API request (has Accept header for JSON or query param)
+      if (
+        (req.headers.accept &&
+          req.headers.accept.includes("application/json")) ||
+        req.query.format === "json" ||
+        req.xhr
+      ) {
+        // API request - return JSON data
+        return res.json({ club });
+      } else {
+        // Page request - render the view
+        res.render("dashboard/club_owner/club/detail", { club });
+      }
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

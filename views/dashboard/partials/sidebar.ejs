@@ -128,7 +128,7 @@ userData.role : 'user'; %> <% const userId = userData ? userData._id : ''; %>
       const response = await fetch("/api/notifications?read=false&limit=1", {
         // Fetch only unread count efficiently
         headers: {
-          Authorization: "Bearer " + localStorage.getItem("token"),
+          Authorization: "Bearer " + sessionStorage.getItem("token"),
         },
       });
       if (response.ok) {
@@ -154,4 +154,19 @@ userData.role : 'user'; %> <% const userId = userData ? userData._id : ''; %>
   document.addEventListener("DOMContentLoaded", fetchSidebarNotificationCount);
   // Optionally, refresh count every 30 seconds or so
   // setInterval(fetchSidebarNotificationCount, 30000);
+
+  // Append token to protected links
+  document.addEventListener("DOMContentLoaded", function () {
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      const links = document.querySelectorAll(
+        'a[href^="/api/users/"], a[href^="/api/clubs/"], a[href^="/api/admin/"], a[href^="/api/notifications/"]'
+      );
+      links.forEach((link) => {
+        if (!link.href.includes("?")) {
+          link.href += "?token=" + token;
+        }
+      });
+    }
+  });
 </script>

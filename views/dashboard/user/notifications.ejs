@@ -1,0 +1,146 @@
+<!-- This file uses the layout.ejs -->
+<% title = 'Notifications | CampusConnect' %> <% userRole = 'user' %> <%-
+include('../layout', { title: title, userRole: userRole, body: `
+<div class="max-w-4xl mx-auto">
+  <div class="bg-white rounded-lg shadow p-6 mb-6">
+    <h1 class="text-xl font-bold text-gray-900">Notifications</h1>
+    <p class="text-gray-600">Stay updated with your latest activities.</p>
+  </div>
+
+  <div class="space-y-4" id="notificationsContainer">
+    <!-- Notifications will be populated by JavaScript -->
+    <div class="text-center text-gray-500 py-8">
+      <i class="fas fa-bell text-4xl mb-4"></i>
+      <p>Loading notifications...</p>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div
+    class="flex justify-center mt-6"
+    id="paginationContainer"
+    style="display: none">
+    <button
+      id="loadMoreBtn"
+      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+      Load More
+    </button>
+  </div>
+</div>
+
+<script>
+  let currentPage = 1;
+  const limit = 10;
+  let hasMore = true;
+
+  async function loadNotifications(page = 1, append = false) {
+    try {
+      const token = sessionStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const response = await fetch(\`/api/users/notifications?page=\${page}&limit=\${limit}&format=json\`, {
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Accept': 'application/json'
+        }
+      });
+
+      if (!response.ok) throw new Error('Failed to fetch notifications');
+
+      const data = await response.json();
+      const container = document.getElementById('notificationsContainer');
+      const paginationContainer = document.getElementById('paginationContainer');
+
+      if (!append) {
+        container.innerHTML = '';
+      }
+
+      if (data.notifications && data.notifications.length > 0) {
+        data.notifications.forEach(notification => {
+          const notificationDiv = document.createElement('div');
+          notificationDiv.className = \`bg-white rounded-lg shadow p-4 border-l-4 \${
+            notification.read ? 'border-gray-300' : 'border-blue-500'
+          }\`;
+
+          const timeAgo = new Date(notification.createdAt).toLocaleString();
+
+          notificationDiv.innerHTML = \`
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <p class="text-gray-800 mb-2">\${notification.message}</p>
+                <p class="text-sm text-gray-500">\${timeAgo}</p>
+              </div>
+              <div class="flex items-center space-x-2">
+                \${!notification.read ? '<span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">New</span>' : ''}
+                <button onclick="markAsRead('\${notification._id}')" class="text-blue-500 hover:text-blue-700 text-sm">
+                  <i class="fas fa-check"></i>
+                </button>
+              </div>
+            </div>
+          \`;
+
+          container.appendChild(notificationDiv);
+        });
+
+        // Show pagination if there might be more
+        if (data.notifications.length === limit) {
+          paginationContainer.style.display = 'block';
+          hasMore = true;
+        } else {
+          paginationContainer.style.display = 'none';
+          hasMore = false;
+        }
+      } else {
+        if (!append) {
+          container.innerHTML = '<div class="text-center text-gray-500 py-8"><i class="fas fa-bell-slash text-4xl mb-4"></i><p>No notifications found.</p></div>';
+        }
+        paginationContainer.style.display = 'none';
+        hasMore = false;
+      }
+    } catch (error) {
+      console.error('Error loading notifications:', error);
+      document.getElementById('notificationsContainer').innerHTML =
+        '<div class="text-center text-red-500 py-8"><i class="fas fa-exclamation-triangle text-4xl mb-4"></i><p>Error loading notifications.</p></div>';
+    }
+  }
+
+  async function markAsRead(notificationId) {
+    try {
+      const token = sessionStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const response = await fetch(\`/api/users/notifications/\${notificationId}/read\`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Accept': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        // Reload notifications to update the UI
+        loadNotifications(1, false);
+      }
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
+  }
+
+  // Load more notifications
+  document.getElementById('loadMoreBtn').addEventListener('click', () => {
+    if (hasMore) {
+      currentPage++;
+      loadNotifications(currentPage, true);
+    }
+  });
+
+  // Load initial notifications
+  document.addEventListener('DOMContentLoaded', () => {
+    loadNotifications();
+  });
+</script>
+` }) %>
