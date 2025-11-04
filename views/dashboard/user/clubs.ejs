@@ -1,6 +1,6 @@
-<!-- This file uses the public_layout.ejs -->
-<% title = 'Clubs | CampusConnect' %> <%- include('../public_layout', { title:
-title, body: `
+<!-- This file uses the layout.ejs -->
+<% title = 'Clubs | CampusConnect' %> <%- include('../layout', { title: title,
+userRole: userRole, body: `
 <div class="max-w-6xl mx-auto">
   <div class="bg-white rounded-lg shadow p-6 mb-6">
     <h1 class="text-xl font-bold text-gray-900">Explore Clubs</h1>
@@ -91,7 +91,8 @@ title, body: `
   let currentPage = 1;
   let currentSearch = "";
   let currentCategory = "";
-let clubId = '<% if (typeof club !== "undefined" && club) { %><%= club._id %><% } else { %><% } %>';
+  let clubId =
+    '<% if (typeof club !== "undefined" && club) { %><%= club._id %><% } else { %><% } %>';
 
   async function loadClubs(page = 1, search = "", category = "") {
     try {
@@ -415,4 +416,4 @@ let clubId = '<% if (typeof club !== "undefined" && club) { %><%= club._id %><% 
   // Debug: Log when page loads
   console.log("Clubs page loaded");
 </script>
-` }) %>
+ `}) %>
