@@ -1,6 +1,6 @@
 <!-- This file uses the layout.ejs -->
 <% title = 'Club Owner Dashboard | CampusConnect' %> <% userRole = 'club_owner'
-<% const body = `
+%> <% const body = `
 <div class="max-w-4xl mx-auto">
   <div class="bg-white rounded-lg shadow p-6 mb-6">
     <h1 class="text-xl font-bold text-gray-900">
@@ -89,24 +89,21 @@
           const activityDiv = document.createElement("div");
           activityDiv.className =
             "border-b border-gray-200 pb-3 mb-3 last:border-0 last:mb-0"; // Add border between items
-          activityDiv.innerHTML = `
-                        <div class="flex items-start">
-                            <div class="bg-gray-200 border-2 border-dashed rounded-xl w-8 h-8 mr-3"></div> <!-- Icon placeholder -->
-                            <div class="flex-1">
-                                <p class="text-sm text-gray-800">${
-                                  notification.message
-                                }</p>
-                                <p class="text-xs text-gray-500">${new Date(
-                                  notification.createdAt
-                                ).toLocaleString()}</p>
-                                ${
-                                  !notification.read
-                                    ? '<span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mt-1">New</span>'
-                                    : ""
-                                }
-                            </div>
-                        </div>
-                    `;
+          activityDiv.innerHTML =
+            '<div class="flex items-start">' +
+            '<div class="bg-gray-200 border-2 border-dashed rounded-xl w-8 h-8 mr-3"></div>' +
+            '<div class="flex-1">' +
+            '<p class="text-sm text-gray-800">' +
+            notification.message +
+            "</p>" +
+            '<p class="text-xs text-gray-500">' +
+            new Date(notification.createdAt).toLocaleString() +
+            "</p>" +
+            (!notification.read
+              ? '<span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mt-1">New</span>'
+              : "") +
+            "</div>" +
+            "</div>";
           container.appendChild(activityDiv);
 
           // Count pending requests for badge
@@ -140,6 +137,7 @@
     try {
       const response = await fetch("/api/clubs/my", {
         headers: {
+          Accept: "application/json",
           Authorization: "Bearer " + sessionStorage.getItem("token"),
         },
       });
@@ -148,7 +146,9 @@
 
       if (data.clubs && data.clubs.length > 0) {
         // Redirect to manage page of the first club
-        window.location.href = `/api/clubs/${data.clubs[0]._id}/manage`;
+        const token = sessionStorage.getItem("token");
+        window.location.href =
+          "/api/clubs/" + data.clubs[0]._id + "/manage?token=" + token;
       } else {
         alert("You do not own any clubs yet.");
       }
@@ -167,4 +167,5 @@
   // Load activity when page loads
   document.addEventListener("DOMContentLoaded", loadRecentActivity);
 </script>
-` %> <%- include('../layout', { title: title, userRole: userRole, body: body })%>
+` %> <%- include('../layout', { title: title, userRole: userRole, body: body })
+%>

@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { authenticate, authorize } = require("../middleware/auth");
+const Club = require("../models/Club.model");
 const {
   createClub,
   getMyClubs,
@@ -20,11 +21,15 @@ const {
 // Public route for active clubs
 router.get("/active", getActiveClubs);
 
-
 // Route for users to access create club page
-router.get("/create", authenticate, authorize("user"), (req, res) => {
-  res.render("dashboard/club_owner/club/create");
-});
+router.get(
+  "/create",
+  authenticate,
+  authorize("user", "club_owner"),
+  (req, res) => {
+    res.render("dashboard/club_owner/club/create");
+  }
+);
 
 // Protected routes for club owners
 router.post(
@@ -50,15 +55,25 @@ router.get(
   getClubById
 ); // Anyone can view a club
 router.get(
-  "/:id/requests",
+  "/:id/manage",
   authenticate,
   authorize("club_owner"),
-  (req, res) => {
-    res.render("dashboard/club_owner/club/manage");
+  async (req, res) => {
+    try {
+      const club = await Club.findById(req.params.id);
+      if (!club) {
+        return res
+          .status(404)
+          .render("error/404", { message: "Club not found" });
+      }
+      res.render("dashboard/club_owner/club/manage", { club });
+    } catch (error) {
+      res.status(500).render("error/404", { message: "Server error" });
+    }
   }
 );
 router.put(
-  "/:id/requests/:requestId",
+  "/:id/manage/:requestId",
   authenticate,
   authorize("club_owner"),
   respondToJoinRequest

@@ -113,7 +113,20 @@ const getMyClubs = async (req, res) => {
     const clubs = await Club.find({ owner: userId }).select(
       "name description category status memberCount logo banner createdAt"
     );
-    res.render("dashboard/club_owner/dashboard", { clubs });
+
+    // Check if this is an API request (has Accept header for JSON or query param)
+    if (
+      (req.headers.accept &&
+        req.headers.accept.includes("application/json")) ||
+      req.query.format === "json" ||
+      req.xhr
+    ) {
+      // API request - return JSON data
+      return res.json({ clubs });
+    } else {
+      // Page request - render the view
+      res.render("dashboard/club_owner/dashboard", { clubs });
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

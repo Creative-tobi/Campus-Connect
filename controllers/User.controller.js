@@ -27,15 +27,25 @@ const getDashboard = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // Get joined clubs
-    const joinedClubs = await Club.find({
-      members: { $elemMatch: { user: userId } },
-    }).select("name description category memberCount logo");
+    // Render dashboard based on user role
+    if (user.role === "club_owner") {
+      // For club owners, render club_owner dashboard
+      res.render("dashboard/club_owner/dashboard", { user });
+    } else if (user.role === "admin") {
+      // For admins, render admin dashboard
+      res.render("dashboard/admin/dashboard", { user });
+    } else {
+      // Default to user dashboard
+      // Get joined clubs
+      const joinedClubs = await Club.find({
+        members: { $elemMatch: { user: userId } },
+      }).select("name description category memberCount logo");
 
-    res.render("dashboard/user/dashboard", {
-      user,
-      joinedClubs,
-    });
+      res.render("dashboard/user/dashboard", {
+        user,
+        joinedClubs,
+      });
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

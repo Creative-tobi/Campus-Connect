@@ -9,12 +9,21 @@ userData.role : 'user'; %> <% const userId = userData ? userData._id : ''; %>
     <nav class="px-3 py-4">
       <ul class="space-y-2">
         <li>
+          <% if (userRole === 'club_owner') { %>
+          <a
+            href="/api/clubs/my"
+            class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">
+            <i class="fas fa-home text-gray-500 group-hover:text-gray-900"></i>
+            <span class="ml-3">Home</span>
+          </a>
+          <% } else { %>
           <a
             href="/api/users/dashboard"
             class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">
             <i class="fas fa-home text-gray-500 group-hover:text-gray-900"></i>
             <span class="ml-3">Home</span>
           </a>
+          <% } %>
         </li>
         <li>
           <a
