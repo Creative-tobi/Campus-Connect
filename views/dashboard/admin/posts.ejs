@@ -56,7 +56,11 @@ include('../layout', { title: title, userRole: userRole, body: `
   // Example: Fetch all posts
   async function loadPosts() {
     try {
-      const response = await fetch("/api/admin/posts/data");
+      const response = await fetch("/api/admin/posts/data", {
+        headers: {
+          Authorization: "Bearer " + sessionStorage.getItem("token"),
+        },
+      });
       if (!response.ok) throw new Error("Failed to fetch posts");
       const data = await response.json();
       const tbody = document.getElementById("postsTableBody");
@@ -65,21 +69,34 @@ include('../layout', { title: title, userRole: userRole, body: `
       if (data.posts && data.posts.length > 0) {
         data.posts.forEach((post) => {
           const row = document.createElement("tr");
-          row.innerHTML = '<td class="px-6 py-4 whitespace-nowrap">' +
+          row.innerHTML =
+            '<td class="px-6 py-4 whitespace-nowrap">' +
             '<div class="flex items-center">' +
-              '<div class="bg-gray-200 border-2 border-dashed rounded-xl w-8 h-8 mr-3"></div>' +
-              '<div>' +
-                '<div class="text-sm font-medium text-gray-900">' + (post.author.firstName + " " + post.author.lastName) + '</div>' +
-                '<div class="text-sm text-gray-500">' + post.author.email + '</div>' +
-              '</div>' +
-            '</div>' +
-            '</td>' +
-            '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">' + post.club.name + '</td>' +
-            '<td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">' + post.content + '</td>' +
-            '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">' + new Date(post.createdAt).toLocaleString() + '</td>' +
+            '<div class="bg-gray-200 border-2 border-dashed rounded-xl w-8 h-8 mr-3"></div>' +
+            "<div>" +
+            '<div class="text-sm font-medium text-gray-900">' +
+            (post.author.firstName + " " + post.author.lastName) +
+            "</div>" +
+            '<div class="text-sm text-gray-500">' +
+            post.author.email +
+            "</div>" +
+            "</div>" +
+            "</div>" +
+            "</td>" +
+            '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">' +
+            post.club.name +
+            "</td>" +
+            '<td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">' +
+            post.content +
+            "</td>" +
+            '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">' +
+            new Date(post.createdAt).toLocaleString() +
+            "</td>" +
             '<td class="px-6 py-4 whitespace-nowrap text-sm font-medium">' +
-              '<button onclick="deletePost(\'' + post._id + '\')" class="text-red-600 hover:text-red-900">Delete</button>' +
-            '</td>';
+            '<button data-id="' +
+            post._id +
+            '" onclick="deletePost(this)" class="text-red-600 hover:text-red-900">Delete</button>' +
+            "</td>";
           tbody.appendChild(row);
         });
       } else {

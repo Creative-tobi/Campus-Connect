@@ -40,7 +40,7 @@ include('../layout', { title: title, userRole: userRole, body: `
         throw new Error('No authentication token found');
       }
 
-      const response = await fetch(\`/api/users/notifications?page=\${page}&limit=\${limit}&format=json\`, {
+      const response = await fetch(`/api/users/notifications?page=${page}&limit=${limit}&format=json`, {
         headers: {
           'Authorization': 'Bearer ' + token,
           'Accept': 'application/json'
@@ -60,26 +60,26 @@ include('../layout', { title: title, userRole: userRole, body: `
       if (data.notifications && data.notifications.length > 0) {
         data.notifications.forEach(notification => {
           const notificationDiv = document.createElement('div');
-          notificationDiv.className = \`bg-white rounded-lg shadow p-4 border-l-4 \${
+          notificationDiv.className = `bg-white rounded-lg shadow p-4 border-l-4 ${
             notification.read ? 'border-gray-300' : 'border-blue-500'
-          }\`;
+          }`;
 
           const timeAgo = new Date(notification.createdAt).toLocaleString();
 
-          notificationDiv.innerHTML = \`
+          notificationDiv.innerHTML = `
             <div class="flex items-start justify-between">
               <div class="flex-1">
-                <p class="text-gray-800 mb-2">\${notification.message}</p>
-                <p class="text-sm text-gray-500">\${timeAgo}</p>
+                <p class="text-gray-800 mb-2">${notification.message}</p>
+                <p class="text-sm text-gray-500">${timeAgo}</p>
               </div>
               <div class="flex items-center space-x-2">
-                \${!notification.read ? '<span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">New</span>' : ''}
-                <button onclick="markAsRead('\${notification._id}')" class="text-blue-500 hover:text-blue-700 text-sm">
+                ${!notification.read ? '<span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">New</span>' : ''}
+                <button onclick="markAsRead('${notification._id}')" class="text-blue-500 hover:text-blue-700 text-sm">
                   <i class="fas fa-check"></i>
                 </button>
               </div>
             </div>
-          \`;
+          `;
 
           container.appendChild(notificationDiv);
         });
@@ -113,7 +113,7 @@ include('../layout', { title: title, userRole: userRole, body: `
         throw new Error('No authentication token found');
       }
 
-      const response = await fetch(\`/api/users/notifications/\${notificationId}/read\`, {
+      const response = await fetch(`/api/users/notifications/${notificationId}/read`, {
         method: 'PUT',
         headers: {
           'Authorization': 'Bearer ' + token,

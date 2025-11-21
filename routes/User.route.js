@@ -50,7 +50,16 @@ router.get(
   getClubDetails
 );
 
-router.get("/clubs", searchClubs);
+router.get("/clubs", (req, res) => {
+  // Check if this is a page request (browser navigation)
+  if (req.headers.accept && req.headers.accept.includes("text/html")) {
+    // Page request - render the view
+    res.render("dashboard/user/clubs");
+  } else {
+    // API request - return JSON data
+    return searchClubs(req, res);
+  }
+});
 router.get(
   "/notifications",
   authenticate,

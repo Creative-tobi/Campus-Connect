@@ -1,7 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const { authenticate, authorize } = require("../middleware/auth");
-const Club = require("../models/Club.model");
 const {
   createClub,
   getMyClubs,
@@ -9,101 +7,91 @@ const {
   deleteClub,
   getClubById,
   getActiveClubs,
+  getAllJoinRequests,
   getJoinRequests,
   respondToJoinRequest,
   getClubMembers,
   createPost,
   getClubPosts,
   deletePost,
+  // removeMember,
+  // getClubManage,
   uploadClubImageMiddleware,
 } = require("../controllers/club.controller");
+const { authenticate } = require("../middleware/auth");
+const { allowRoles } = require("../middleware/role");
 
-// Public route for active clubs
-router.get("/active", getActiveClubs);
-
-// Route for users to access create club page
-router.get(
+// Routes for club management (club owners only)
+router.get("/my", authenticate, allowRoles("club_owner"), getMyClubs);
+router.post(
   "/create",
   authenticate,
-  authorize("user", "club_owner"),
-  (req, res) => {
-    res.render("dashboard/club_owner/club/create");
-  }
-);
-
-// Protected routes for club owners
-router.post(
-  "/",
-  authenticate,
-  authorize("user"),
+  allowRoles("club_owner"),
   uploadClubImageMiddleware,
   createClub
-); // User creates club, becomes owner
-router.get("/my", authenticate, authorize("club_owner"), getMyClubs);
+);
 router.put(
   "/:id",
   authenticate,
-  authorize("club_owner"),
+  allowRoles("club_owner"),
   uploadClubImageMiddleware,
   updateClub
 );
-router.delete("/:id", authenticate, authorize("club_owner"), deleteClub);
+router.delete("/:id", authenticate, allowRoles("club_owner"), deleteClub);
+
+// Routes for viewing clubs (public for active clubs, authenticated for others)
+router.get("/public/:id", getClubById); // Public route for active clubs
+router.get("/:id", authenticate, getClubById); // Authenticated route
+// router.get(
+//   "/:id/manage",
+//   authenticate,
+//   allowRoles("club_owner"),
+//   getClubManage
+// ); // Manage page route
+
+// Routes for club members and requests (club owners only)
 router.get(
-  "/:id",
+  "/:id/requests",
   authenticate,
-  authorize("user", "club_owner", "admin"),
-  getClubById
-); // Anyone can view a club
-router.get(
-  "/:id/manage",
-  authenticate,
-  authorize("club_owner"),
-  async (req, res) => {
-    try {
-      const club = await Club.findById(req.params.id);
-      if (!club) {
-        return res
-          .status(404)
-          .render("error/404", { message: "Club not found" });
-      }
-      res.render("dashboard/club_owner/club/manage", { club });
-    } catch (error) {
-      res.status(500).render("error/404", { message: "Server error" });
-    }
-  }
+  allowRoles("club_owner"),
+  getJoinRequests
 );
 router.put(
-  "/:id/manage/:requestId",
+  "/:id/requests/:requestId",
   authenticate,
-  authorize("club_owner"),
+  allowRoles("club_owner"),
   respondToJoinRequest
 );
 router.get(
   "/:id/members",
   authenticate,
-  authorize("user", "club_owner", "admin"),
+  allowRoles("club_owner"),
   getClubMembers
 );
+// router.delete(
+//   "/:id/members/:memberId",
+//   authenticate,
+//   allowRoles("club_owner"),
+//   removeMember
+// );
 
-// Protected routes for club members/posts
+// Routes for posts (club owners only for creating/deleting)
 router.post(
   "/:id/posts",
   authenticate,
-  authorize("club_owner"),
+  allowRoles("club_owner"),
   uploadClubImageMiddleware,
   createPost
 );
-router.get(
-  "/:id/posts",
-  authenticate,
-  authorize("user", "club_owner", "admin"),
-  getClubPosts
-);
+router.get("/:id/posts", authenticate, getClubPosts);
 router.delete(
-  "/posts/:postId",
+  "/:id/posts/:postId",
   authenticate,
-  authorize("club_owner"),
+  allowRoles("club_owner"),
   deletePost
-); // Owner can delete posts
+);
+
+// Public routes
+router.get("/", getActiveClubs);
 
 module.exports = router;

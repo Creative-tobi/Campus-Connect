@@ -1,6 +1,6 @@
 <!-- This file uses the layout.ejs -->
-<% title = 'Clubs | CampusConnect' %> <%- include('../layout', { title: title,
-userRole: userRole, body: `
+<% title = 'Clubs | CampusConnect' %> <% userRole = typeof user !== 'undefined'
+? user.role : 'user' %> <% const body = `
 <div class="max-w-6xl mx-auto">
   <div class="bg-white rounded-lg shadow p-6 mb-6">
     <h1 class="text-xl font-bold text-gray-900">Explore Clubs</h1>
@@ -22,11 +22,13 @@ userRole: userRole, body: `
           id="categoryFilter"
           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
           <option value="">All Categories</option>
-          <option value="Technology">Technology</option>
-          <option value="Sports">Sports</option>
-          <option value="Arts">Arts</option>
-          <option value="Academic">Academic</option>
-          <option value="Social">Social</option>
+          <option value="academic">Academic</option>
+          <option value="sports">Sports</option>
+          <option value="tech">Technology</option>
+          <option value="arts">Arts</option>
+          <option value="cultural">Cultural</option>
+          <option value="political">Political</option>
+          <option value="other">Other</option>
         </select>
       </div>
       <button
@@ -91,8 +93,7 @@ userRole: userRole, body: `
   let currentPage = 1;
   let currentSearch = "";
   let currentCategory = "";
-  let clubId =
-    '<% if (typeof club !== "undefined" && club) { %><%= club._id %><% } else { %><% } %>';
+ let clubId = '<%= typeof club !== "undefined" && club ? club._id : "" %>';
 
   async function loadClubs(page = 1, search = "", category = "") {
     try {
@@ -112,6 +113,7 @@ userRole: userRole, body: `
       if (!response.ok) throw new Error("Failed to fetch clubs");
 
       const data = await response.json();
+      console.log("Clubs data:", data.clubs);
       const container = document.getElementById("clubsContainer");
       container.innerHTML = "";
 
@@ -254,7 +256,7 @@ userRole: userRole, body: `
   async function joinClub(clubId) {
     if (confirm("Are you sure you want to join this club?")) {
       try {
-        const response = await fetch(`/api/users/clubs/${clubId}/join`, {
+        const response = await fetch("/api/users/clubs/" + clubId + "/join/", {
           method: "POST",
           headers: {
             Authorization: "Bearer " + sessionStorage.getItem("token"),
@@ -291,7 +293,7 @@ userRole: userRole, body: `
 
   async function viewClubDetails(clubId) {
     try {
-      const response = await fetch(`/api/clubs/public/${clubId}`, {
+      const response = await fetch("/api/clubs/public/" + clubId, {
         headers: {
           Accept: "application/json",
         },
@@ -381,7 +383,6 @@ userRole: userRole, body: `
           </div>
         </div>
       `;
-
       document.getElementById("modalContent").innerHTML = content;
 
       // Show modal
@@ -416,4 +417,5 @@ userRole: userRole, body: `
   // Debug: Log when page loads
   console.log("Clubs page loaded");
 </script>
- `}) %>
+` %> <%- include('../layout', { title: title, userRole: userRole, body: body })
+%>

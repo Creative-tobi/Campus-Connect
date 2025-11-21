@@ -74,28 +74,55 @@ include('../layout', { title: title, userRole: userRole, body: `
       if (data.clubs && data.clubs.length > 0) {
         data.clubs.forEach((club) => {
           const row = document.createElement("tr");
-          row.innerHTML = '<td class="px-6 py-4 whitespace-nowrap">' +
-            '<div class="flex items-center">' +
-              '<div class="bg-gray-200 border-2 border-dashed rounded-xl w-8 h-8 mr-3"></div>' +
-              '<div>' +
-                '<div class="text-sm font-medium text-gray-900">' + club.name + '</div>' +
-                '<div class="text-sm text-gray-500">' + club.description.substring(0, 30) + '...</div>' +
-              '</div>' +
-            '</div>' +
-            '</td>' +
-            '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">' + club.owner.firstName + ' ' + club.owner.lastName + '</td>' +
-            '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">' + club.category + '</td>' +
+          row.innerHTML =
             '<td class="px-6 py-4 whitespace-nowrap">' +
-              '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ' +
-                (club.status === "approved" ? "bg-green-100 text-green-800" : club.status === "rejected" ? "bg-red-100 text-red-800" : "bg-yellow-100 text-yellow-800") +
-                '">' + club.status + '</span>' +
-            '</td>' +
-            '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">' + club.members.length + '</td>' +
+            '<div class="flex items-center">' +
+            '<div class="bg-gray-200 border-2 border-dashed rounded-xl w-8 h-8 mr-3"></div>' +
+            "<div>" +
+            '<div class="text-sm font-medium text-gray-900">' +
+            club.name +
+            "</div>" +
+            '<div class="text-sm text-gray-500">' +
+            club.description.substring(0, 30) +
+            "...</div>" +
+            "</div>" +
+            "</div>" +
+            "</td>" +
+            '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">' +
+            club.owner.firstName +
+            " " +
+            club.owner.lastName +
+            "</td>" +
+            '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">' +
+            club.category +
+            "</td>" +
+            '<td class="px-6 py-4 whitespace-nowrap">' +
+            '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ' +
+            (club.status === "active"
+              ? "bg-green-100 text-green-800"
+              : club.status === "rejected"
+              ? "bg-red-100 text-red-800"
+              : "bg-yellow-100 text-yellow-800") +
+            '">' +
+            club.status +
+            "</span>" +
+            "</td>" +
+            '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">' +
+            club.memberCount +
+            "</td>" +
             '<td class="px-6 py-4 whitespace-nowrap text-sm font-medium">' +
-              (club.status === "pending" ? '<button onclick="approveClub(\'' + club._id + '\')" class="text-green-600 hover:text-green-900 mr-2">Approve</button>' +
-                '<button onclick="rejectClub(\'' + club._id + '\')" class="text-red-600 hover:text-red-900 mr-2">Reject</button>' : "") +
-              '<button onclick="deleteClub(\'' + club._id + '\')" class="text-red-600 hover:text-red-900">Delete</button>' +
-            '</td>';
+            (club.status === "pending"
+              ? '<button data-id="' +
+                club._id +
+                '" onclick="approveClub(this)" class="text-green-600 hover:text-green-900 mr-2">Approve</button>' +
+                '<button data-id="' +
+                club._id +
+                '" onclick="rejectClub(this)" class="text-red-600 hover:text-red-900 mr-2">Reject</button>'
+              : "") +
+            '<button data-id="' +
+            club._id +
+            '" onclick="deleteClub(this)" class="text-red-600 hover:text-red-900">Delete</button>' +
+            "</td>";
           tbody.appendChild(row);
         });
       } else {
@@ -110,15 +137,19 @@ include('../layout', { title: title, userRole: userRole, body: `
   }
 
   // Example: Approve club
-  async function approveClub(clubId) {
+  async function approveClub(button) {
+    const clubId = button.getAttribute("data-id");
     if (confirm("Are you sure you want to approve this club?")) {
       try {
-        const response = await fetch("/api/admin/clubs/" + clubId + "/approve", {
-          method: "PUT",
-          headers: {
-            Authorization: "Bearer " + sessionStorage.getItem("token"),
-          },
-        });
+        const response = await fetch(
+          "/api/admin/clubs/" + clubId + "/approve",
+          {
+            method: "PUT",
+            headers: {
+              Authorization: "Bearer " + sessionStorage.getItem("token"),
+            },
+          }
+        );
 
         if (response.ok) {
           alert("Club approved successfully.");
@@ -135,7 +166,8 @@ include('../layout', { title: title, userRole: userRole, body: `
   }
 
   // Example: Reject club
-  async function rejectClub(clubId) {
+  async function rejectClub(button) {
+    const clubId = button.getAttribute("data-id");
     if (confirm("Are you sure you want to reject this club?")) {
       try {
         const response = await fetch("/api/admin/clubs/" + clubId + "/reject", {
@@ -160,7 +192,8 @@ include('../layout', { title: title, userRole: userRole, body: `
   }
 
   // Example: Delete club
-  async function deleteClub(clubId) {
+  async function deleteClub(button) {
+    const clubId = button.getAttribute("data-id");
     if (
       confirm(
         "Are you sure you want to delete this club? This action cannot be undone."

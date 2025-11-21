@@ -116,8 +116,7 @@ const getMyClubs = async (req, res) => {
 
     // Check if this is an API request (has Accept header for JSON or query param)
     if (
-      (req.headers.accept &&
-        req.headers.accept.includes("application/json")) ||
+      (req.headers.accept && req.headers.accept.includes("application/json")) ||
       req.query.format === "json" ||
       req.xhr
     ) {
@@ -297,34 +296,35 @@ const getJoinRequests = async (req, res) => {
     const userId = req.user.id;
 
     // Find club and check if user is the owner
-    const club = await Club.findById(clubId).populate(
-      "members.user",
-      "firstName lastName email profilePicture"
-    );
+    const club = await Club.findById(clubId);
     if (!club || club.owner.toString() !== userId) {
       return res
         .status(403)
         .json({ error: "Access denied. You are not the club owner." });
     }
 
-    // In this simplified model, requests are handled via notifications.
-    // We can find users who are not members but might have sent requests implicitly.
-    // A more robust system would have a separate JoinRequest model.
-    // For now, we'll just return the current members as an example structure.
-    // This part needs more complex logic depending on how requests are stored.
-    // Let's assume requests are implicitly linked via notifications of type JOIN_REQUEST.
-
+    // Find join requests: notifications where type is JOIN_REQUEST, recipient is the owner, and relatedObjectId is the requesting user
     const joinRequests = await Notification.find({
-      relatedObjectId: { $in: club.members.map((m) => m.user) }, // This is not correct for requests
+      recipient: userId,
       type: "JOIN_REQUEST",
       relatedObjectType: "User",
-    }).populate("recipient", "firstName lastName email"); // recipient is club owner
+    }).populate("relatedObjectId", "firstName lastName email profilePicture");
 
-    // A better approach: Find users who sent join requests (requires a separate request model or flag in club/members)
-    // For now, return an empty array or a placeholder.
-    // This requires a significant design decision on how to track requests.
-    // Placeholder:
-    const requests = []; // Implement based on your request storage strategy
+    // Filter out users who are already members
+    const pendingRequests = joinRequests.filter((notification) => {
+      const requestingUserId = notification.relatedObjectId._id.toString();
+      return !club.members.some(
+        (member) => member.user.toString() === requestingUserId
+      );
+    });
+
+    // Format the response
+    const requests = pendingRequests.map((notification) => ({
+      _id: notification._id,
+      user: notification.relatedObjectId,
+      message: notification.message,
+      createdAt: notification.createdAt,
+    }));
 
     res.json({ requests });
   } catch (error) {
@@ -409,6 +409,17 @@ Campus Connect Team`;
       return res
         .status(400)
         .json({ error: 'Invalid action. Use "approve" or "decline".' });
+    }
+
+    // Find and delete the join request notification
+    const notificationToDelete = await Notification.findOne({
+      recipient: ownerId,
+      type: "JOIN_REQUEST",
+      relatedObjectId: userIdToRespond,
+      relatedObjectType: "User",
+    });
+    if (notificationToDelete) {
+      await Notification.findByIdAndDelete(notificationToDelete._id);
     }
 
     res.json({
@@ -533,6 +544,77 @@ const deletePost = async (req, res) => {
   }
 };
 
+const getClubManage = async (req, res) => {
+  try {
+    const { id: clubId } = req.params;
+
+    const club = await Club.findById(clubId).populate(
+      "owner",
+      "firstName lastName email"
+    );
+
+    if (!club) {
+      return res.status(404).json({ error: "Club not found" });
+    }
+
+    // Check if user is the owner
+    if (club.owner._id.toString() !== req.user.id) {
+      return res.status(403).json({ error: "Access denied" });
+    }
+
+    res.render("dashboard/club_owner/club/manage", { club });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const removeMember = async (req, res) => {
+  try {
+    const { id: clubId, memberId } = req.params;
+    const userId = req.user.id;
+
+    const club = await Club.findOne({ _id: clubId, owner: userId });
+    if (!club) {
+      return res
+        .status(404)
+        .json({ error: "Club not found or you are not the owner" });
+    }
+
+    const memberIndex = club.members.findIndex(
+      (m) => m.user.toString() === memberId
+    );
+    if (memberIndex === -1) {
+      return res
+        .status(400)
+        .json({ error: "User is not a member of this club" });
+    }
+
+    // Prevent removing the owner
+    if (club.members[memberIndex].user.toString() === userId) {
+      return res
+        .status(400)
+        .json({ error: "You cannot remove yourself from the club" });
+    }
+
+    club.members.splice(memberIndex, 1);
+    await club.save();
+
+    // Create notification for the removed member
+    const notification = new Notification({
+      recipient: memberId,
+      type: "OTHER",
+      message: `You have been removed from the club "${club.name}".`,
+      relatedObjectId: club._id,
+      relatedObjectType: "Club",
+    });
+    await notification.save();
+
+    res.json({ message: "Member removed successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 // Export the multer upload middleware for use in the route
 module.exports = {
   createClub,
@@ -542,6 +624,7 @@ module.exports = {
   getClubById,
   getActiveClubs,
   getJoinRequests, // Note: Logic needs refinement
+
   respondToJoinRequest,
   getClubMembers,
   createPost,
