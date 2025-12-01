@@ -310,8 +310,13 @@ const getJoinRequests = async (req, res) => {
       relatedObjectType: "User",
     }).populate("relatedObjectId", "firstName lastName email profilePicture");
 
+    // Filter requests for this specific club by checking if the message contains the club name
+    const clubJoinRequests = joinRequests.filter((notification) =>
+      notification.message.includes(club.name)
+    );
+
     // Filter out users who are already members
-    const pendingRequests = joinRequests.filter((notification) => {
+    const pendingRequests = clubJoinRequests.filter((notification) => {
       const requestingUserId = notification.relatedObjectId._id.toString();
       return !club.members.some(
         (member) => member.user.toString() === requestingUserId
@@ -630,6 +635,8 @@ module.exports = {
   createPost,
   getClubPosts,
   deletePost,
+  getClubManage,
+  removeMember,
   uploadClubImageMiddleware: upload.fields([
     { name: "logo", maxCount: 1 },
     { name: "banner", maxCount: 1 },

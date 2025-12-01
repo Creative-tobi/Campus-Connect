@@ -7,7 +7,7 @@ const {
   deleteClub,
   getClubById,
   getActiveClubs,
-  getAllJoinRequests,
+  // getAllJoinRequests,
   getJoinRequests,
   respondToJoinRequest,
   getClubMembers,
@@ -18,26 +18,25 @@ const {
   // getClubManage,
   uploadClubImageMiddleware,
 } = require("../controllers/club.controller");
-const { authenticate } = require("../middleware/auth");
-const { allowRoles } = require("../middleware/role");
+const { authenticate, authorize } = require("../middleware/auth");
 
 // Routes for club management (club owners only)
-router.get("/my", authenticate, allowRoles("club_owner"), getMyClubs);
+router.get("/my", authenticate, authorize("club_owner"), getMyClubs);
 router.post(
   "/create",
   authenticate,
-  allowRoles("club_owner"),
+  authorize("club_owner"),
   uploadClubImageMiddleware,
   createClub
 );
 router.put(
   "/:id",
   authenticate,
-  allowRoles("club_owner"),
+  authorize("club_owner"),
   uploadClubImageMiddleware,
   updateClub
 );
-router.delete("/:id", authenticate, allowRoles("club_owner"), deleteClub);
+router.delete("/:id", authenticate, authorize("club_owner"), deleteClub);
 
 // Routes for viewing clubs (public for active clubs, authenticated for others)
 router.get("/public/:id", getClubById); // Public route for active clubs
@@ -53,19 +52,19 @@ router.get("/:id", authenticate, getClubById); // Authenticated route
 router.get(
   "/:id/requests",
   authenticate,
-  allowRoles("club_owner"),
+  // allowRoles("club_owner"),
   getJoinRequests
 );
 router.put(
   "/:id/requests/:requestId",
   authenticate,
-  allowRoles("club_owner"),
+  // allowRoles("club_owner"),
   respondToJoinRequest
 );
 router.get(
   "/:id/members",
   authenticate,
-  allowRoles("club_owner"),
+  // allowRoles("club_owner"),
   getClubMembers
 );
 // router.delete(
@@ -79,7 +78,7 @@ router.get(
 router.post(
   "/:id/posts",
   authenticate,
-  allowRoles("club_owner"),
+  authorize("club_owner"),
   uploadClubImageMiddleware,
   createPost
 );
@@ -87,7 +86,7 @@ router.get("/:id/posts", authenticate, getClubPosts);
 router.delete(
   "/:id/posts/:postId",
   authenticate,
-  allowRoles("club_owner"),
+  authorize("club_owner"),
   deletePost
 );
 

@@ -50,16 +50,21 @@ router.get(
   getClubDetails
 );
 
-router.get("/clubs", (req, res) => {
-  // Check if this is a page request (browser navigation)
-  if (req.headers.accept && req.headers.accept.includes("text/html")) {
-    // Page request - render the view
-    res.render("dashboard/user/clubs");
-  } else {
-    // API request - return JSON data
-    return searchClubs(req, res);
+router.get(
+  "/clubs",
+  authenticate,
+  authorize("user", "club_owner", "admin"),
+  (req, res) => {
+    // Check if this is a page request (browser navigation)
+    if (req.headers.accept && req.headers.accept.includes("text/html")) {
+      // Page request - render the view
+      res.render("dashboard/user/clubs", { user: req.user });
+    } else {
+      // API request - return JSON data
+      return searchClubs(req, res);
+    }
   }
-});
+);
 router.get(
   "/notifications",
   authenticate,

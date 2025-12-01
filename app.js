@@ -3,41 +3,44 @@ const dotenv = require("dotenv");
 const path = require("path");
 const connectDB = require("./config/db");
 const bodyparser = require("body-parser");
+const { authenticate, authorize } = require("./middleware/auth");
 require("./config/cloudinary"); // Initialize Cloudinary configuration
 
 dotenv.config();
 
 // Function to create the initial admin user
 const createInitialAdmin = async () => {
-    try {
-        const User = require('./models/User.model');
-        const bcrypt = require('bcrypt');
+  try {
+    const User = require("./models/User.model");
+    const bcrypt = require("bcrypt");
 
-        const existingAdmin = await User.findOne({ email: 'kunlexlatest@gmail.com' });
-        if (existingAdmin) {
-            console.log('Admin user already exists.✅');
-            return;
-        }
-
-        const hashedPassword = await bcrypt.hash('the n', 12);
-
-        const adminUser = new User({
-            firstName: 'Lateef',
-            lastName: 'Kammaldeen',
-            email: 'kunlexlatest@gmail.com',
-            password: hashedPassword,
-            faculty: 'administration',
-            role: 'admin',
-            isVerified: true, // Already verified
-            phone: '08075373527' // Add a placeholder phone if required by schema
-        });
-
-        await adminUser.save();
-        console.log('✅ Initial admin user created successfully.');
-    } catch (error) {
-        console.error('❌ Error creating initial admin:', error.message);
-        process.exit(1); // Exit if admin creation fails critically
+    const existingAdmin = await User.findOne({
+      email: "kunlexlatest@gmail.com",
+    });
+    if (existingAdmin) {
+      console.log("Admin user already exists.✅");
+      return;
     }
+
+    const hashedPassword = await bcrypt.hash("the n", 12);
+
+    const adminUser = new User({
+      firstName: "Lateef",
+      lastName: "Kammaldeen",
+      email: "kunlexlatest@gmail.com",
+      password: hashedPassword,
+      faculty: "administration",
+      role: "admin",
+      isVerified: true, // Already verified
+      phone: "08075373527", // Add a placeholder phone if required by schema
+    });
+
+    await adminUser.save();
+    console.log("✅ Initial admin user created successfully.");
+  } catch (error) {
+    console.error("❌ Error creating initial admin:", error.message);
+    process.exit(1); // Exit if admin creation fails critically
+  }
 };
 
 (async () => {
@@ -116,11 +119,11 @@ const createInitialAdmin = async () => {
   }
 
   app.get("/", (req, res) => {
-    res.render('index');
+    res.render("index");
   });
 
   app.get("/clubs", (req, res) => {
-    res.render("dashboard/user/clubs", { title: 'Clubs | CampusConnect' });
+    res.render("dashboard/user/clubs", { title: "Clubs | CampusConnect" });
   });
 
   // Error handling middleware

@@ -166,12 +166,29 @@ const leaveClub = async (req, res) => {
 const getJoinedClubs = async (req, res) => {
   try {
     const userId = req.user.id;
+    const { page = 1, limit = 10 } = req.query;
 
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const total = await Club.countDocuments({
+      members: { $elemMatch: { user: userId } },
+    });
     const clubs = await Club.find({
       members: { $elemMatch: { user: userId } },
-    }).select("name description category memberCount logo");
+    })
+      .select("name description category memberCount logo owner")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
 
-    res.json({ clubs });
+    res.json({
+      clubs,
+      pagination: {
+        current: parseInt(page),
+        pages: Math.ceil(total / parseInt(limit)),
+        total,
+        limit: parseInt(limit),
+      },
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
