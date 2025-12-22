@@ -1,0 +1,394 @@
+<%- include('../../../partials/header') %>
+
+<div class="relative w-full h-64 md:h-80 bg-gray-300">
+  <% if (club.banner) { %>
+  <img
+    src="<%= club.banner %>"
+    class="w-full h-full object-cover"
+    alt="Club Banner" />
+  <% } else { %>
+  <div
+    class="w-full h-full bg-blue-500 flex items-center justify-center text-white font-bold text-6xl">
+    <%= club.name.charAt(0).toUpperCase() %>
+  </div>
+  <% } %>
+  <div class="absolute inset-0 bg-black bg-opacity-30"></div>
+</div>
+
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 relative -mt-20 z-10">
+  <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+    <div class="md:flex md:items-start md:justify-between">
+      <div class="flex items-center">
+        <% if (club.logo) { %>
+        <img
+          src="<%= club.logo %>"
+          class="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-white shadow-md bg-white object-cover" />
+        <% } else { %>
+        <div
+          class="w-24 h-24 md:w-32 md:h-32 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-2xl border-4 border-white shadow-md">
+          <%= club.name.charAt(0).toUpperCase() %>
+        </div>
+        <% } %>
+        <div class="ml-4 md:ml-6 mt-12 md:mt-0">
+          <h1 class="text-3xl font-bold text-gray-900"><%= club.name %></h1>
+          <div class="flex items-center mt-2 text-gray-600 text-sm">
+            <span
+              class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded mr-2"
+              ><%= club.category %></span
+            >
+            <span
+              ><i class="fas fa-users mr-1"></i> <%= club.members ?
+              club.members.length : 0 %> Members</span
+            >
+          </div>
+          <p class="text-sm text-gray-500 mt-1">
+            Owner: <%= club.owner ? club.owner.firstName + ' ' +
+            club.owner.lastName : 'Unknown' %>
+          </p>
+        </div>
+      </div>
+
+      <div id="club-action-buttons" class="mt-6 md:mt-0 flex gap-3">
+        <button
+          disabled
+          class="bg-gray-100 text-gray-400 px-6 py-2 rounded-md font-bold cursor-not-allowed">
+          Loading...
+        </button>
+      </div>
+    </div>
+
+    <div class="mt-8 border-t pt-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">About Us</h2>
+      <p class="text-gray-600 whitespace-pre-line leading-relaxed">
+        <%= club.description %>
+      </p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8 pb-12">
+    <div class="lg:col-span-2 space-y-6">
+      <div
+        id="owner-create-post"
+        class="hidden bg-white p-6 rounded-lg shadow border border-gray-200">
+        <div class="flex items-center mb-4">
+          <div
+            class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-3">
+            <i class="fas fa-pen"></i>
+          </div>
+          <h3 class="text-lg font-bold text-gray-800">Create a Post</h3>
+        </div>
+
+        <form id="createPostForm">
+          <div class="mb-4">
+            <input
+              type="text"
+              name="title"
+              placeholder="Post Title"
+              class="w-full text-lg font-bold border-b border-gray-300 focus:border-blue-500 focus:outline-none py-2 transition"
+              required />
+          </div>
+          <div class="mb-4">
+            <textarea
+              name="content"
+              rows="3"
+              placeholder="What's happening in <%= club.name %>?"
+              class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none"
+              required></textarea>
+          </div>
+
+          <div class="flex justify-between items-center pt-2">
+            <div class="flex items-center">
+              <label
+                class="cursor-pointer flex items-center text-gray-500 hover:text-blue-600 transition p-2 rounded hover:bg-blue-50">
+                <i class="fas fa-image text-xl mr-2"></i>
+                <span class="text-sm font-medium">Add Photo</span>
+                <input
+                  type="file"
+                  name="postMedia"
+                  class="hidden"
+                  accept="image/*"
+                  onchange="document.getElementById('file-preview').innerText = this.files[0] ? this.files[0].name : ''" />
+              </label>
+              <span
+                id="file-preview"
+                class="ml-3 text-xs text-gray-400 truncate max-w-[150px]"></span>
+            </div>
+
+            <button
+              type="submit"
+              id="submitPostBtn"
+              class="bg-blue-600 text-white px-6 py-2 rounded-full font-bold hover:bg-blue-700 transition shadow-md flex items-center">
+              <span>Post</span>
+              <i class="fas fa-paper-plane ml-2"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <h3 class="text-xl font-bold text-gray-800 mb-4">Community Feed</h3>
+      <div id="posts-container" class="space-y-6">
+        <div class="text-center py-12 text-gray-400">
+          <i class="fas fa-spinner fa-spin text-3xl mb-3"></i>
+          <p>Loading posts...</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="lg:col-span-1 space-y-6">
+      <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="font-bold text-gray-800">Members</h3>
+          <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full"
+            ><%= club.members ? club.members.length : 0 %></span
+          >
+        </div>
+
+        <div class="flex -space-x-2 overflow-hidden mb-4">
+          <% if (club.members && club.members.length > 0) { %> <%
+          club.members.slice(0, 5).forEach(member => { %> <% if (member.user) {
+          %>
+          <img
+            class="inline-block h-10 w-10 rounded-full ring-2 ring-white object-cover"
+            src="<%= member.user.profilePicture || 'https://via.placeholder.com/40' %>"
+            alt="<%= member.user.firstName %>"
+            title="<%= member.user.firstName %> <%= member.user.lastName %>" />
+          <% } %> <% }) %> <% if (club.members.length > 5) { %>
+          <div
+            class="flex items-center justify-center h-10 w-10 rounded-full ring-2 ring-white bg-gray-100 text-xs font-medium text-gray-600">
+            +<%= club.members.length - 5 %>
+          </div>
+          <% } %> <% } else { %>
+          <p class="text-sm text-gray-500">No members yet.</p>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
+        <h3 class="font-bold text-gray-800 mb-4">Club Info</h3>
+        <ul class="space-y-3 text-sm text-gray-600">
+          <li class="flex items-start">
+            <i class="fas fa-calendar-alt w-6 mt-1 text-gray-400"></i>
+            <span
+              >Created <%= new Date(club.createdAt).toLocaleDateString()
+              %></span
+            >
+          </li>
+          <li class="flex items-start">
+            <i class="fas fa-tag w-6 mt-1 text-gray-400"></i>
+            <span>Category: <%= club.category %></span>
+          </li>
+          <li class="flex items-start">
+            <i class="fas fa-envelope w-6 mt-1 text-gray-400"></i>
+            <span>Contact: <%= club.owner ? club.owner.email : 'N/A' %></span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 1. SAFE DATA EMBEDDING
+  // We filter out any null members to prevent EJS/JS crashes
+  const clubId = "<%= club._id %>";
+  const ownerId = '<%= club.owner ? club.owner._id : "" %>';
+  // const memberIds = [
+  //     <% if(club.members) { %>
+  //         <%- club.members.filter(m => m.user).map(m => `"${m.user._id}"`).join(',') %>
+  //     <% } %>
+  // ];
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    const token = localStorage.getItem("token");
+    const userStr = localStorage.getItem("user");
+
+    // Check Login
+    if (!token || !userStr) {
+      console.log("No token found, redirecting to login.");
+      window.location.href = "/api/auth/login";
+      return;
+    }
+
+    const user = JSON.parse(userStr);
+    const userId = user.id || user._id; // Handle potential ID format differences
+
+    // Initialize Page
+    setupUI(userId, token);
+    loadPosts(token);
+
+    // ATTACH EVENT LISTENER FOR POST SUBMISSION
+    // We do this inside DOMContentLoaded to ensure the form exists
+    const postForm = document.getElementById("createPostForm");
+    if (postForm) {
+      postForm.addEventListener("submit", handlePostSubmit);
+    } else {
+      console.error("Create Post Form not found in DOM");
+    }
+  });
+
+  function setupUI(userId, token) {
+    const actionContainer = document.getElementById("club-action-buttons");
+    const isOwner = userId === ownerId;
+    const isMember = memberIds.includes(userId);
+
+    if (isOwner) {
+      // Show the form
+      document.getElementById("owner-create-post").classList.remove("hidden");
+
+      // Show Manage Button
+      actionContainer.innerHTML = `
+                <a href="/api/clubs/${clubId}/manage" class="token-link bg-gray-800 text-white px-6 py-2 rounded-md font-bold hover:bg-gray-900 transition shadow">
+                    <i class="fas fa-cog mr-2"></i> Manage Club
+                </a>
+            `;
+      // Append token manually to this new link since it was injected after page load
+      actionContainer.querySelector("a").href += `?token=${token}`;
+    } else if (isMember) {
+      actionContainer.innerHTML = `<button onclick="leaveClub()" class="bg-red-50 text-red-600 border border-red-200 px-6 py-2 rounded-md font-bold hover:bg-red-100">Leave Club</button>`;
+    } else {
+      actionContainer.innerHTML = `<button onclick="joinClubRequest()" class="bg-blue-600 text-white px-8 py-2 rounded-md font-bold hover:bg-blue-700 shadow-lg">Join Club</button>`;
+    }
+  }
+
+  async function handlePostSubmit(e) {
+    // PREVENT DEFAULT IS CRITICAL
+    // It stops the browser from reloading/navigating to the JSON API endpoint
+    e.preventDefault();
+
+    const token = localStorage.getItem("token");
+    const btn = document.getElementById("submitPostBtn");
+    const originalText = btn.innerHTML;
+
+    // Show loading state
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Posting...';
+    btn.disabled = true;
+
+    try {
+      const formData = new FormData(e.target);
+
+      // Send request
+      const res = await fetch(`/api/clubs/${clubId}/posts`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          // Do NOT set Content-Type for FormData, browser sets it with boundary
+        },
+        body: formData,
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        // Success: Reset form and reload posts
+        e.target.reset();
+        document.getElementById("file-preview").innerText = "";
+        loadPosts(token);
+        alert("Post created successfully!");
+      } else {
+        // Error from server
+        console.error("Server Error:", result);
+        alert(result.error || "Failed to create post");
+      }
+    } catch (error) {
+      console.error("Network/JS Error:", error);
+      alert("An error occurred while posting.");
+    } finally {
+      // Restore button
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+    }
+  }
+
+  async function loadPosts(token) {
+    const container = document.getElementById("posts-container");
+    try {
+      const res = await fetch(`/api/clubs/${clubId}/posts`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+
+      if (data.posts && data.posts.length > 0) {
+        const user = JSON.parse(localStorage.getItem("user"));
+        container.innerHTML = data.posts
+          .map((post) => {
+            const isAuthor = user.id === post.author._id;
+            return `
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex items-center">
+                                ${
+                                  post.author.profilePicture
+                                    ? `<img src="${post.author.profilePicture}" class="w-10 h-10 rounded-full mr-3 object-cover border">`
+                                    : `<div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold mr-3">${post.author.firstName
+                                        .charAt(0)
+                                        .toUpperCase()}</div>`
+                                }
+                                <div>
+                                    <h4 class="font-bold text-gray-900 text-sm">${
+                                      post.author.firstName
+                                    } ${post.author.lastName}</h4>
+                                    <p class="text-xs text-gray-500">${new Date(
+                                      post.createdAt
+                                    ).toLocaleDateString()}</p>
+                                </div>
+                            </div>
+                            ${
+                              isAuthor
+                                ? `<button onclick="deletePost('${post._id}')" class="text-gray-400 hover:text-red-600"><i class="fas fa-trash"></i></button>`
+                                : ""
+                            }
+                        </div>
+                        <h3 class="font-bold text-lg text-gray-900 mb-2">${
+                          post.title
+                        }</h3>
+                        <p class="text-gray-700 mb-4 whitespace-pre-line">${
+                          post.content
+                        }</p>
+                        ${
+                          post.media
+                            ? `<img src="${post.media}" class="w-full rounded-lg max-h-96 object-contain border bg-gray-50">`
+                            : ""
+                        }
+                    </div>
+                    `;
+          })
+          .join("");
+      } else {
+        container.innerHTML = `<div class="bg-white p-8 rounded-lg border text-center text-gray-500">No posts yet.</div>`;
+      }
+    } catch (error) {
+      container.innerHTML = `<p class="text-red-500 text-center">Failed to load posts.</p>`;
+    }
+  }
+
+  async function joinClubRequest() {
+    const token = localStorage.getItem("token");
+    const res = await fetch(`/api/users/clubs/${clubId}/join`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.ok) alert("Join request sent!");
+  }
+
+  async function leaveClub() {
+    if (!confirm("Leave club?")) return;
+    const token = localStorage.getItem("token");
+    const res = await fetch(`/api/users/clubs/${clubId}/leave`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.ok) window.location.reload();
+  }
+
+  async function deletePost(postId) {
+    if (!confirm("Delete post?")) return;
+    const token = localStorage.getItem("token");
+    const res = await fetch(`/api/clubs/${clubId}/posts/${postId}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.ok) loadPosts(token);
+  }
+</script>
+
+<%- include('../../../partials/footer') %>

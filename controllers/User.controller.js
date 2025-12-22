@@ -2,47 +2,46 @@ const User = require("../models/User.model");
 const Club = require("../models/Club.model");
 const Post = require("../models/Post.model");
 const Notification = require("../models/Notification.model");
-const cloudinary = require("../config/cloudinary");
 const multer = require("multer");
-const { CloudinaryStorage } = require("multer-storage-cloudinary");
-
-// Configure Multer for Cloudinary
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: "campus_connect/profile_pictures",
-    allowed_formats: ["jpg", "png", "jpeg"],
-    transformation: [{ width: 500, height: 500, crop: "limit" }], // Optional resize
-  },
-});
-
-const upload = multer({ storage });
+const upload = multer({ dest: "uploads/" });
 
 const getDashboard = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const user = await User.findById(userId).select("-password");
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    // Render dashboard based on user role
-    if (user.role === "club_owner") {
-      // For club owners, render club_owner dashboard
-      res.render("dashboard/club_owner/dashboard", { user });
-    } else if (user.role === "admin") {
-      // For admins, render admin dashboard
-      res.render("dashboard/admin/dashboard", { user });
+    if (req.user.role === "admin") {
+      // For admin, get overall stats
+      const totalUsers = await User.countDocuments();
+      const totalClubs = await Club.countDocuments();
+      const totalPosts = await Post.countDocuments();
+      res.render("dashboards/admin/dashboard", {
+        user: req.user,
+        stats: { totalUsers, totalClubs, totalPosts },
+      });
+    } else if (req.user.role === "club_owner") {
+      // For club owners, get their clubs
+      const clubs = await Club.find({ owner: userId }).select(
+        "name description category status memberCount logo banner createdAt"
+      );
+      res.render("dashboards/club_owner/dashboard", { user: req.user, clubs });
     } else {
-      // Default to user dashboard
-      // Get joined clubs
+      // For regular users, get joined clubs and recent posts
       const joinedClubs = await Club.find({
         members: { $elemMatch: { user: userId } },
-      }).select("name description category memberCount logo");
+      }).select("_id name");
 
-      res.render("dashboard/user/dashboard", {
-        user,
+      const clubIds = joinedClubs.map((club) => club._id);
+
+      // Get recent posts from joined clubs
+      const posts = await Post.find({ club: { $in: clubIds } })
+        .populate("author", "firstName lastName profilePicture")
+        .populate("club", "name")
+        .sort({ createdAt: -1 })
+        .limit(10);
+
+      res.render("dashboards/user/dashboard", {
+        user: req.user,
+        posts,
         joinedClubs,
       });
     }
@@ -51,34 +50,77 @@ const getDashboard = async (req, res) => {
   }
 };
 
-const joinClub = async (req, res) => {
-  try {
-    const { id: clubId } = req.params;
-    const userId = req.user.id;
+const getUserPosts = async (req, res) => {
+  const userId = req.user.id;
 
-    const club = await Club.findById(clubId);
-    if (!club) {
-      return res.status(404).json({ error: "Club not found" });
+  // Check if this is an API request (has Accept header for JSON or query param)
+  if (
+    (req.headers.accept && req.headers.accept.includes("application/json")) ||
+    req.query.format === "json" ||
+    req.xhr
+  ) {
+    // API request - return JSON data
+    try {
+      // Find clubs the user is a member of
+      const joinedClubs = await Club.find({
+        members: { $elemMatch: { user: userId } },
+      }).select("_id");
+
+      const clubIds = joinedClubs.map((club) => club._id);
+
+      // Get posts from those clubs
+      const posts = await Post.find({ club: { $in: clubIds } })
+        .populate("author", "firstName lastName profilePicture")
+        .populate("club", "name")
+        .sort({ createdAt: -1 });
+
+      res.json({ posts });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
     }
+  } else {
+    // Page request - render the view
+    try {
+      let posts = [];
 
-    // Check if user is already a member or has a pending request
-    const existingMember = club.members.find(
-      (m) => m.user.toString() === userId
-    );
-    if (existingMember) {
-      return res
-        .status(400)
-        .json({ error: "You are already a member of this club" });
+      if (req.user.role === "admin") {
+        // For admins, get all posts
+        posts = await Post.find({})
+          .populate("author", "firstName lastName profilePicture")
+          .populate("club", "name")
+          .sort({ createdAt: -1 });
+      } else if (req.user.role === "club_owner") {
+        // For club owners, get posts from their clubs
+        const clubs = await Club.find({ owner: userId }).select("_id");
+        const clubIds = clubs.map((club) => club._id);
+        posts = await Post.find({ club: { $in: clubIds } })
+          .populate("author", "firstName lastName profilePicture")
+          .populate("club", "name")
+          .sort({ createdAt: -1 });
+      } else {
+        // For regular users, get posts from joined clubs
+        const joinedClubs = await Club.find({
+          members: { $elemMatch: { user: userId } },
+        }).select("_id");
+
+        const clubIds = joinedClubs.map((club) => club._id);
+
+        // Get posts from those clubs
+        posts = await Post.find({ club: { $in: clubIds } })
+          .populate("author", "firstName lastName profilePicture")
+          .populate("club", "name")
+          .sort({ createdAt: -1 });
+      }
+
+      res.render("dashboards/user/posts", { posts, user: req.user });
+    } catch (error) {
+      // For page requests, render the view with an error message
+      res.render("dashboards/user/posts", {
+        posts: [],
+        user: req.user,
+        error: "Failed to load posts. Please try again later.",
+      });
     }
-
-    // Check if user has already sent a request (simplified logic, might need adjustment)
-    // For now, assume request is sent and pending status is handled elsewhere
-    // This endpoint might just redirect to request flow
-    res.status(400).json({
-      error: "Please send a join request first. Use /clubs/:id/join-request",
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
   }
 };
 
@@ -221,9 +263,9 @@ const getClubDetails = async (req, res) => {
     } else {
       // Page request - render the view
       if (req.user.role === "user") {
-        res.render("dashboard/user/clubs", { club });
+        res.render("dashboards/user/clubs", { club });
       } else {
-        res.render("dashboard/club_owner/club/detail", { club });
+        res.render("dashboards/club_owner/club/detail", { club });
       }
     }
   } catch (error) {
@@ -234,6 +276,7 @@ const getClubDetails = async (req, res) => {
 const searchClubs = async (req, res) => {
   try {
     const { search, category, page = 1, limit = 10 } = req.query;
+    const userId = req.user.id;
 
     let query = { status: "active" };
     if (search) {
@@ -249,13 +292,21 @@ const searchClubs = async (req, res) => {
     const skip = (parseInt(page) - 1) * parseInt(limit);
     const total = await Club.countDocuments(query);
     const clubs = await Club.find(query)
-      .select("name description category memberCount logo banner")
+      .select("name description category memberCount logo banner owner members")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(parseInt(limit));
 
+    // Add membership and ownership info for each club
+    const clubsWithStatus = clubs.map(club => {
+      const clubObj = club.toObject();
+      clubObj.isOwner = club.owner.toString() === userId;
+      clubObj.isMember = club.members.some(member => member.user.toString() === userId);
+      return clubObj;
+    });
+
     res.json({
-      clubs,
+      clubs: clubsWithStatus,
       pagination: {
         current: parseInt(page),
         pages: Math.ceil(total / parseInt(limit)),
@@ -351,29 +402,6 @@ const uploadProfilePicture = async (req, res) => {
   }
 };
 
-const getUserPosts = async (req, res) => {
-  try {
-    const userId = req.user.id;
-
-    // Find clubs the user is a member of
-    const joinedClubs = await Club.find({
-      members: { $elemMatch: { user: userId } },
-    }).select("_id");
-
-    const clubIds = joinedClubs.map((club) => club._id);
-
-    // Get posts from those clubs
-    const posts = await Post.find({ club: { $in: clubIds } })
-      .populate("author", "firstName lastName profilePicture")
-      .populate("club", "name")
-      .sort({ createdAt: -1 });
-
-    res.json({ posts });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
 const updateUserProfile = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -423,7 +451,7 @@ const getUserProfile = async (req, res) => {
     // Get user's posts count
     const userPostsCount = await Post.countDocuments({ author: userId });
 
-    res.render("dashboard/user/profile", {
+    res.render("dashboards/user/profile", {
       user,
       joinedClubsCount,
       userPostsCount,

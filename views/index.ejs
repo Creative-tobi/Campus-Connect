@@ -1,530 +1,179 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Campus Connect - Connect, Collaborate, Engage</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-  </head>
-  <body class="bg-gray-50">
-    <!-- Include Navbar Partial -->
-    <%- include('./Navbar') %>
+<%- include('partials/header') %>
 
-    <!-- Hero Section -->
-    <main class="pt-16">
-      <!-- Add top padding to account for fixed navbar -->
-      <div class="bg-gradient-to-r from-blue-500 to-blue-700">
-        <div class="max-w-7xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:px-8">
-          <div class="text-center">
-            <h1
-              class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
-              Connect with Your Campus
+<div class="relative overflow-hidden bg-white">
+    <div class="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
+    <div class="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-100 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
+    <div class="absolute -bottom-32 left-20 w-72 h-72 bg-pink-100 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000"></div>
+
+    <div class="relative pt-16 pb-20 sm:pt-24 sm:pb-32 lg:pb-40 overflow-hidden">
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
+            <h1 class="text-5xl tracking-tight font-extrabold text-gray-900 sm:text-6xl md:text-7xl">
+                <span class="block">Level Up Your</span>
+                <span class="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+                    Campus Life
+                </span>
             </h1>
-            <p class="mt-6 max-w-lg mx-auto text-xl text-blue-100">
-              Join clubs, share ideas, and build your university network.
+            <p class="mt-6 max-w-2xl mx-auto text-xl text-gray-500">
+                The ultimate social network for students, lecturers, and clubs. Connect, collaborate, and discover your tribe at Campus Connect.
             </p>
-            <div class="mt-10 flex flex-col sm:flex-row justify-center gap-4">
-              <a
-                href="/api/auth/register"
-                class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-blue-700 bg-white hover:bg-blue-50">
-                Get Started
-                <i class="fas fa-arrow-right ml-2"></i>
-              </a>
-              <a
-                href="/api/auth/login"
-                class="inline-flex items-center justify-center px-6 py-3 border border-white text-base font-medium rounded-md shadow-sm text-white bg-transparent hover:bg-blue-600">
-                Sign In
-              </a>
+            
+            <div class="mt-10 max-w-sm mx-auto sm:max-w-none sm:flex sm:justify-center gap-4">
+                <div id="hero-cta-primary">
+                    <a href="/api/auth/register" class="flex items-center justify-center px-8 py-4 border border-transparent text-lg font-medium rounded-xl text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10 transition transform hover:-translate-y-1 shadow-lg shadow-blue-500/30">
+                        Get Started <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+                <div id="hero-cta-secondary">
+                    <a href="/clubs" class="flex items-center justify-center px-8 py-4 border border-transparent text-lg font-medium rounded-xl text-blue-700 bg-blue-50 hover:bg-blue-100 md:py-4 md:text-lg md:px-10 transition">
+                        Explore Clubs
+                    </a>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
+    </div>
 
-      <!-- Features Section -->
-      <div class="py-12 bg-white">
+    <div class="bg-gray-900 py-12 relative z-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="lg:text-center">
-            <h2
-              class="text-base text-blue-600 font-semibold tracking-wide uppercase">
-              Features
-            </h2>
-            <p
-              class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-              What Campus Connect Offers
-            </p>
-            <p class="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
-              A platform designed for students, lecturers, and clubs to thrive.
-            </p>
-          </div>
-
-          <div class="mt-10">
-            <div
-              class="space-y-10 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-10">
-              <div class="relative">
-                <div
-                  class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white">
-                  <i class="fas fa-users"></i>
+            <div class="grid grid-cols-2 gap-8 md:grid-cols-4 text-center">
+                <div>
+                    <div class="text-4xl font-bold text-white">500+</div>
+                    <div class="text-gray-400 mt-1">Students</div>
                 </div>
-                <div class="ml-16">
-                  <h3 class="text-lg font-medium text-gray-900">Join Clubs</h3>
-                  <p class="mt-2 text-base text-gray-500">
-                    Discover and become a member of various clubs based on your
-                    interests.
-                  </p>
+                <div>
+                    <div class="text-4xl font-bold text-white">50+</div>
+                    <div class="text-gray-400 mt-1">Active Clubs</div>
                 </div>
-              </div>
-
-              <div class="relative">
-                <div
-                  class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white">
-                  <i class="fas fa-share-alt"></i>
+                <div>
+                    <div class="text-4xl font-bold text-white">100+</div>
+                    <div class="text-gray-400 mt-1">Events</div>
                 </div>
-                <div class="ml-16">
-                  <h3 class="text-lg font-medium text-gray-900">
-                    Share Content
-                  </h3>
-                  <p class="mt-2 text-base text-gray-500">
-                    Post updates, announcements, and engage with your club
-                    members.
-                  </p>
+                <div>
+                    <div class="text-4xl font-bold text-white">24/7</div>
+                    <div class="text-gray-400 mt-1">Community</div>
                 </div>
-              </div>
-
-              <div class="relative">
-                <div
-                  class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white">
-                  <i class="fas fa-bullhorn"></i>
-                </div>
-                <div class="ml-16">
-                  <h3 class="text-lg font-medium text-gray-900">
-                    Events & Announcements
-                  </h3>
-                  <p class="mt-2 text-base text-gray-500">
-                    Stay updated with the latest events and news from your
-                    campus.
-                  </p>
-                </div>
-              </div>
-
-              <div class="relative">
-                <div
-                  class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white">
-                  <i class="fas fa-user-friends"></i>
-                </div>
-                <div class="ml-16">
-                  <h3 class="text-lg font-medium text-gray-900">
-                    Build Network
-                  </h3>
-                  <p class="mt-2 text-base text-gray-500">
-                    Connect with fellow students, lecturers, and professionals.
-                  </p>
-                </div>
-              </div>
             </div>
-          </div>
         </div>
-      </div>
+    </div>
 
-      <!-- Explore Clubs Section -->
-      <div class="py-12 bg-gray-50">
+    <div class="py-24 bg-gray-50 relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="lg:text-center">
-            <h2
-              class="text-base text-blue-600 font-semibold tracking-wide uppercase">
-              Explore Clubs
+            <div class="text-center">
+                <h2 class="text-base text-blue-600 font-bold tracking-wide uppercase">Why Join?</h2>
+                <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+                    More than just a social network
+                </p>
+            </div>
+
+            <div class="mt-20">
+                <div class="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-3">
+                    
+                    <div class="group relative bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                        <div class="absolute -top-6 left-8">
+                            <div class="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-blue-600 text-white shadow-lg group-hover:scale-110 transition-transform">
+                                <i class="fas fa-users text-xl"></i>
+                            </div>
+                        </div>
+                        <h3 class="mt-4 text-xl font-bold text-gray-900">Find Your Squad</h3>
+                        <p class="mt-4 text-gray-500 leading-relaxed">
+                            Browse dozens of clubs based on your interests. From Robotics to Art, find people who love what you love.
+                        </p>
+                    </div>
+
+                    <div class="group relative bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                        <div class="absolute -top-6 left-8">
+                            <div class="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-purple-600 text-white shadow-lg group-hover:scale-110 transition-transform">
+                                <i class="fas fa-bullhorn text-xl"></i>
+                            </div>
+                        </div>
+                        <h3 class="mt-4 text-xl font-bold text-gray-900">Never Miss Out</h3>
+                        <p class="mt-4 text-gray-500 leading-relaxed">
+                            Get real-time updates on campus events, workshops, and parties directly in your personalized feed.
+                        </p>
+                    </div>
+
+                    <div class="group relative bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                        <div class="absolute -top-6 left-8">
+                            <div class="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-pink-600 text-white shadow-lg group-hover:scale-110 transition-transform">
+                                <i class="fas fa-rocket text-xl"></i>
+                            </div>
+                        </div>
+                        <h3 class="mt-4 text-xl font-bold text-gray-900">Lead the Way</h3>
+                        <p class="mt-4 text-gray-500 leading-relaxed">
+                            Start your own club, manage members, create posts, and become a leader in your campus community.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="relative bg-blue-700">
+        <div class="absolute inset-0">
+            <img class="w-full h-full object-cover mix-blend-multiply filter brightness-50" src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Campus life">
+        </div>
+        <div class="relative max-w-7xl mx-auto py-24 px-4 sm:py-32 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl mb-8">
+                Ready to dive in?
             </h2>
-            <p
-              class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-              Discover Clubs on Campus
-            </p>
-            <p class="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
-              Find clubs that match your interests and connect with like-minded
-              students.
-            </p>
-          </div>
-
-          <div
-            id="clubsContainer"
-            class="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Clubs will be populated by JavaScript -->
-            <div class="text-center text-gray-500 py-8 col-span-full">
-              Loading clubs...
-            </div>
-          </div>
+            <a href="/api/auth/register" class="inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-bold rounded-xl text-blue-700 bg-white hover:bg-gray-50 md:py-4 md:text-xl md:px-10 transition shadow-xl">
+                Create Free Account
+            </a>
         </div>
-      </div>
-
-      <!-- Testimonials/Team Section (Example placeholder) -->
-      <div class="py-12 bg-gray-100">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 class="text-3xl font-extrabold text-gray-900 text-center mb-8">
-            Our Team
-          </h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Example Team Member -->
-            <div
-              class="shadow-md p-8 rounded-lg text-center bg-white hover:shadow-xl transition-shadow duration-300 ease-in-out">
-              <div
-                class="bg-gray-200 border-2 border-dashed rounded-full w-16 h-16 mx-auto mb-4"></div>
-              <!-- Placeholder for image -->
-              <h3 class="text-lg font-semibold text-gray-900">Team Member 1</h3>
-              <ul class="list-disc list-inside text-left text-gray-500 mt-2">
-                <li>Role 1</li>
-                <li>Role 2</li>
-              </ul>
-            </div>
-            <div
-              class="shadow-md p-8 rounded-lg text-center bg-white hover:shadow-xl transition-shadow duration-300 ease-in-out">
-              <div
-                class="bg-gray-200 border-2 border-dashed rounded-full w-16 h-16 mx-auto mb-4"></div>
-              <h3 class="text-lg font-semibold text-gray-900">Team Member 2</h3>
-              <ul class="list-disc list-inside text-left text-gray-500 mt-2">
-                <li>Role 1</li>
-                <li>Role 2</li>
-              </ul>
-            </div>
-            <div
-              class="shadow-md p-8 rounded-lg text-center bg-white hover:shadow-xl transition-shadow duration-300 ease-in-out">
-              <div
-                class="bg-gray-200 border-2 border-dashed rounded-full w-16 h-16 mx-auto mb-4"></div>
-              <h3 class="text-lg font-semibold text-gray-900">Team Member 3</h3>
-              <ul class="list-disc list-inside text-left text-gray-500 mt-2">
-                <li>Role 1</li>
-                <li>Role 2</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-
-            <!-- Campus Life Section -->
-      <div class="py-16 bg-blue-50">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-          <div class="text-center mb-12">
-            <h2 class="text-3xl font-extrabold text-gray-900">
-              Experience Campus Life
-            </h2>
-            <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-              From tech meetups to cultural festivals — discover what makes your campus unique.
-            </p>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
-              <img src="/assets/group2.jpg" alt="Event" class="h-48 w-full object-cover">
-              <div class="p-6">
-                <h3 class="text-lg font-semibold text-gray-900">Tech & Innovation</h3>
-                <p class="mt-2 text-gray-600">Join hands-on workshops and learn from campus innovators.</p>
-              </div>
-            </div>
-
-            <div class="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
-              <img src="/assets/group.jpg" alt="Festival" class="h-48 w-full object-cover">
-              <div class="p-6">
-                <h3 class="text-lg font-semibold text-gray-900">Cultural Festivals</h3>
-                <p class="mt-2 text-gray-600">Celebrate diversity and creativity through vibrant student events.</p>
-              </div>
-            </div>
-
-            <div class="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
-              <img src="/assets/group3.png" alt="Sports" class="h-48 w-full object-cover">
-              <div class="p-6">
-                <h3 class="text-lg font-semibold text-gray-900">Sports & Fitness</h3>
-                <p class="mt-2 text-gray-600">Stay active and bond with peers through exciting competitions.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Testimonials Section -->
-      <div class="py-16 bg-white">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8 text-center">
-          <h2 class="text-3xl font-extrabold text-gray-900">What Students Say</h2>
-          <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-            Hear from students who've built amazing connections through Campus Connect.
-          </p>
-
-          <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="bg-gray-50 p-6 rounded-lg shadow hover:shadow-md transition">
-              <p class="text-gray-700 italic">“Campus Connect helped me discover new clubs and make real friends.”</p>
-              <div class="mt-4 flex items-center justify-center gap-3">
-                <img src="/assets/aissh.jpg" alt="" class="w-10 h-10 rounded-full">
-                <div>
-                  <h4 class="font-semibold text-gray-900">Aishat A.</h4>
-                  <p class="text-sm text-gray-500">Computer Science</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="bg-gray-50 p-6 rounded-lg shadow hover:shadow-md transition">
-              <p class="text-gray-700 italic">“I've attended amazing tech events and found my internship here.”</p>
-              <div class="mt-4 flex items-center justify-center gap-3">
-                <img src="/assets/ayodeji.jpg" alt="Student" class="w-10 h-10 rounded-full">
-                <div>
-                  <h4 class="font-semibold text-gray-900">Deji A.</h4>
-                  <p class="text-sm text-gray-500">Engineering</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="bg-gray-50 p-6 rounded-lg shadow hover:shadow-md transition">
-              <p class="text-gray-700 italic">“A great platform to share ideas and organize campus activities.”</p>
-              <div class="mt-4 flex items-center justify-center gap-3">
-                <img src="/assets/eniife.jpg" alt="Student" class="w-10 h-10 rounded-full">
-                <div>
-                  <h4 class="font-semibold text-gray-900">Gift E.</h4>
-                  <p class="text-sm text-gray-500">Mass Communication</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-
-      <!-- CTA Section -->
-      <div class="bg-gray-900">
-        <div
-          class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 lg:flex lg:items-center lg:justify-between">
-          <h2
-            class="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
-            <span class="block">Ready to get started?</span>
-            <span class="block text-blue-400">Join Campus Connect today.</span>
-          </h2>
-          <div class="mt-8 flex lg:mt-0 lg:flex-shrink-0">
-            <div class="inline-flex rounded-md shadow">
-              <a
-                href="/api/auth/register"
-                class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-gray-900 bg-white hover:bg-gray-100">
-                Get started
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
-
-   
-
-         <!-- Partners / Collaborators Section -->
-      <div class="py-16 bg-blue-50">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8 text-center">
-          <h2 class="text-3xl font-extrabold text-gray-900">
-            Our Campus Partners
-          </h2>
-          <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-            Proudly collaborating with universities, clubs, and student bodies across the country.
-          </p>
-
-        <div class="mt-12 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 items-center justify-center">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/120px-React-icon.svg.png"
-       alt="React" class="h-12 mx-auto opacity-70 hover:opacity-100 transition"
-       onerror="this.onerror=null;this.src='https://via.placeholder.com/120x48?text=React';">
-
-  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/JavaScript-logo.png/120px-JavaScript-logo.png"
-       alt="JavaScript" class="h-12 mx-auto opacity-70 hover:opacity-100 transition"
-       onerror="this.onerror=null;this.src='https://via.placeholder.com/120x48?text=JS';">
-
-  <!-- Node.js (was Partner 3) - switched to PNG thumb for reliability -->
-  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Node.js_logo.svg/120px-Node.js_logo.svg.png"
-       alt="Node.js" class="h-12 mx-auto opacity-70 hover:opacity-100 transition"
-       onerror="this.onerror=null;this.src='https://via.placeholder.com/120x48?text=Node.js';">
-
-  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Tailwind_CSS_Logo.svg/120px-Tailwind_CSS_Logo.svg.png"
-       alt="Tailwind CSS" class="h-12 mx-auto opacity-70 hover:opacity-100 transition"
-       onerror="this.onerror=null;this.src='https://via.placeholder.com/120x48?text=Tailwind';">
-
- <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original-wordmark.svg"
-     alt="HTML5"
-     class="h-12 mx-auto opacity-70 hover:opacity-100 transition"
-     onerror="this.onerror=null;this.src='https://via.placeholder.com/120x48?text=HTML5';">
-
-
-  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/CSS.3.svg/120px-CSS.3.svg.png"
-       alt="CSS3" class="h-12 mx-auto opacity-70 hover:opacity-100 transition"
-       onerror="this.onerror=null;this.src='https://via.placeholder.com/120x48?text=CSS3';">
+    </div>
 </div>
 
-        </div>
-      </div>
+<style>
+    /* Custom Animation for Background Blobs */
+    @keyframes blob {
+        0% { transform: translate(0px, 0px) scale(1); }
+        33% { transform: translate(30px, -50px) scale(1.1); }
+        66% { transform: translate(-20px, 20px) scale(0.9); }
+        100% { transform: translate(0px, 0px) scale(1); }
+    }
+    .animate-blob {
+        animation: blob 7s infinite;
+    }
+    .animation-delay-2000 {
+        animation-delay: 2s;
+    }
+    .animation-delay-4000 {
+        animation-delay: 4s;
+    }
+</style>
 
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const token = localStorage.getItem('token');
+        const role = localStorage.getItem('role');
+        
+        if (token) {
+            // Determine dashboard link based on role
+            let dashboardLink = '/api/users/dashboard';
+            if (role === 'admin') dashboardLink = '/api/admin/dashboard';
+            
+            // Check if user is club_owner, they also use the standard dashboard but might have special permissions
+            // (Your backend handles the view rendering logic for dashboard/user/dashboard)
 
-       <!-- Ebunoluwa -->
-      <!--  Footer -->
-      <footer class="bg-gray-900 text-gray-300">
-        <div class="max-w-7xl mx-auto py-12 px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-10">
-          
-          <!-- Brand -->
-          <div>
-            <h3 class="text-white text-2xl font-bold mb-4">Campus Connect</h3>
-            <p class="text-gray-400">
-              Empowering students and lecturers to connect, collaborate, and engage through a vibrant campus community.
-            </p>
-          </div>
+            // Update Main CTA
+            const primaryContainer = document.getElementById('hero-cta-primary');
+            if (primaryContainer) {
+                primaryContainer.innerHTML = `
+                    <a href="${dashboardLink}" class="token-link flex items-center justify-center px-8 py-4 border border-transparent text-lg font-medium rounded-xl text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10 transition transform hover:-translate-y-1 shadow-lg">
+                        Go to Dashboard <i class="fas fa-tachometer-alt ml-2"></i>
+                    </a>
+                `;
+            }
 
-          <!-- Quick Links -->
-          <div>
-            <h4 class="text-white text-lg font-semibold mb-4">Quick Links</h4>
-            <ul class="space-y-2">
-              <li><a href="/" class="hover:text-blue-400 transition">Home</a></li>
-              <li><a href="/about" class="hover:text-blue-400 transition">About</a></li>
-              <li><a href="/clubs" class="hover:text-blue-400 transition">Clubs</a></li>
-              <li><a href="/events" class="hover:text-blue-400 transition">Events</a></li>
-              <li><a href="/contact" class="hover:text-blue-400 transition">Contact</a></li>
-            </ul>
-          </div>
-
-          <!-- Support -->
-          <div>
-            <h4 class="text-white text-lg font-semibold mb-4">Support</h4>
-            <ul class="space-y-2">
-              <li><a href="/faq" class="hover:text-blue-400 transition">FAQ</a></li>
-              <li><a href="/help" class="hover:text-blue-400 transition">Help Center</a></li>
-              <li><a href="/terms" class="hover:text-blue-400 transition">Terms & Conditions</a></li>
-              <li><a href="/privacy" class="hover:text-blue-400 transition">Privacy Policy</a></li>
-            </ul>
-          </div>
-
-          <!-- Contact -->
-          <div>
-            <h4 class="text-white text-lg font-semibold mb-4">Contact Us</h4>
-            <p>Email: <a href="mailto:support@campusconnect.com" class="text-blue-400 hover:underline">everyonegamil.com</a></p>
-            <p class="mt-2">Phone: +234 800 000 0000</p>
-            <div class="flex space-x-4 mt-4">
-              <a href="#" class="text-gray-400 hover:text-blue-400"><i class="fab fa-facebook-f"></i></a>
-              <a href="#" class="text-gray-400 hover:text-blue-400"><i class="fab fa-twitter"></i></a>
-              <a href="#" class="text-gray-400 hover:text-blue-400"><i class="fab fa-instagram"></i></a>
-              <a href="#" class="text-gray-400 hover:text-blue-400"><i class="fab fa-linkedin"></i></a>
-            </div>
-          </div>
-        </div>
-
-        <div class="border-t border-gray-700 text-center py-6">
-          <p class="text-gray-400 text-sm">
-            &copy; 2025 Campus Connect. All rights reserved. Designed with ❤️ for students.
-          </p>
-        </div>
-      </footer>
-
-<!-- aishat -->
-    </footer>
-
-    <script>
-      async function loadClubs() {
-        try {
-          const response = await fetch("/api/clubs/active?limit=9");
-
-          if (!response.ok) throw new Error("Failed to fetch clubs");
-
-          const data = await response.json();
-          const container = document.getElementById("clubsContainer");
-          container.innerHTML = "";
-
-          if (data.clubs && data.clubs.length > 0) {
-            data.clubs.forEach((club) => {
-              const clubCard = document.createElement("div");
-              clubCard.className =
-                "bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow border-l-4 border-blue-500";
-
-              const logoHtml = club.logo
-                ? `<img src="${club.logo}" alt="${club.name}" class="w-full h-full object-cover rounded-lg">`
-                : '<i class="fas fa-users text-gray-400 text-2xl"></i>';
-
-              const description =
-                club.description.length > 100
-                  ? club.description.substring(0, 100) + "..."
-                  : club.description;
-
-              const memberText = club.memberCount === 1 ? "member" : "members";
-
-              // Category color mapping
-              const categoryColors = {
-                academic: "bg-green-100 text-green-800",
-                sports: "bg-orange-100 text-orange-800",
-                tech: "bg-purple-100 text-purple-800",
-                arts: "bg-pink-100 text-pink-800",
-                cultural: "bg-indigo-100 text-indigo-800",
-                political: "bg-red-100 text-red-800",
-                other: "bg-gray-100 text-gray-800",
-              };
-
-              const categoryColor =
-                categoryColors[club.category] || categoryColors["other"];
-
-              clubCard.innerHTML = `
-                <div class="flex items-start space-x-4">
-                  <div class="w-16 h-16 bg-gray-200 rounded-lg flex-shrink-0 flex items-center justify-center">
-                    ${logoHtml}
-                  </div>
-                  <div class="flex-1 min-w-0">
-                    <h3 class="text-xl font-semibold text-gray-900 truncate">${club.name}</h3>
-                    <p class="text-gray-600 mt-2">${description}</p>
-                    <div class="flex items-center justify-between mt-4">
-                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${categoryColor}">${club.category}</span>
-                      <span class="text-sm text-gray-500">${club.memberCount} ${memberText}</span>
-                    </div>
-                    <div class="mt-4">
-                      <button onclick="joinClub('${club._id}')" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm">
-                        <i class="fas fa-plus mr-2"></i>Join Club
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              `;
-              container.appendChild(clubCard);
-            });
-          } else {
-            container.innerHTML =
-              '<div class="col-span-full text-center text-gray-500 py-8">No clubs available at the moment.</div>';
-          }
-        } catch (error) {
-          console.error("Error loading clubs:", error);
-          document.getElementById("clubsContainer").innerHTML =
-            '<div class="col-span-full text-center text-red-500 py-8">Error loading clubs.</div>';
+            // Append token to secondary link if needed
+            const secondaryLink = document.querySelector('#hero-cta-secondary a');
+            if (secondaryLink) {
+                secondaryLink.classList.add('token-link');
+                const separator = secondaryLink.href.includes('?') ? '&' : '?';
+                secondaryLink.href = `${secondaryLink.href}${separator}token=${token}`;
+            }
         }
-      }
+    });
+</script>
 
-      async function joinClub(clubId) {
-        try {
-          const token = sessionStorage.getItem("token");
-          if (!token) {
-            // Redirect to login if not authenticated
-            window.location.href = "/api/auth/login";
-            return;
-          }
-
-          const response = await fetch(`/api/clubs/${clubId}/join`, {
-            method: "POST",
-            headers: {
-              Authorization: "Bearer " + token,
-              Accept: "application/json",
-            },
-          });
-
-          if (response.ok) {
-            alert("Successfully joined the club!");
-            // Reload clubs to update member count
-            loadClubs();
-          } else if (response.status === 401) {
-            // Token expired or invalid
-            sessionStorage.removeItem("token");
-            window.location.href = "/api/auth/login";
-          } else {
-            const errorData = await response.json();
-            alert(errorData.message || "Failed to join club");
-          }
-        } catch (error) {
-          console.error("Error joining club:", error);
-          alert("An error occurred while joining the club");
-        }
-      }
-
-      // Load clubs when page loads
-      document.addEventListener("DOMContentLoaded", loadClubs);
-    </script>
-  </body>
-</html>
+<%- include('partials/footer') %>

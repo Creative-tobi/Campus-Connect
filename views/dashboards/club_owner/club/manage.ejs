@@ -1,0 +1,297 @@
+<%- include('../../../partials/header') %>
+
+<div class="container mx-auto max-w-5xl">
+  <div class="mb-6 flex justify-between items-center">
+    <div>
+      <h1 class="text-3xl font-bold">Manage: <%= club.name %></h1>
+      <p class="text-gray-500">Club Management Portal</p>
+    </div>
+    <a
+      href="/api/clubs/<%= club._id %>"
+      class="token-link text-blue-600 hover:underline">
+      <i class="fas fa-arrow-left"></i> Back to Club
+    </a>
+  </div>
+
+  <div class="flex border-b mb-6">
+    <button
+      onclick="switchTab('details')"
+      id="tab-details"
+      class="px-6 py-2 border-b-2 border-blue-600 font-bold text-blue-600">
+      Details
+    </button>
+    <button
+      onclick="switchTab('requests')"
+      id="tab-requests"
+      class="px-6 py-2 text-gray-600 hover:text-blue-600">
+      Join Requests
+    </button>
+    <button
+      onclick="switchTab('members')"
+      id="tab-members"
+      class="px-6 py-2 text-gray-600 hover:text-blue-600">
+      Members
+    </button>
+  </div>
+
+  <div id="view-details" class="tab-content">
+    <div class="bg-white p-6 rounded shadow border max-w-2xl">
+      <form id="updateClubForm">
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2"
+            >Club Name</label
+          >
+          <input
+            type="text"
+            name="name"
+            value="<%= club.name %>"
+            class="w-full border p-2 rounded bg-gray-50" />
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2"
+            >Description</label
+          >
+          <textarea
+            name="description"
+            class="w-full border p-2 rounded bg-gray-50 h-32">
+<%= club.description %></textarea
+          >
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2"
+            >Category</label
+          >
+          <select name="category" class="w-full border p-2 rounded bg-gray-50">
+            <option value="<%= club.category %>" selected>
+              Current: <%= club.category %>
+            </option>
+            <option value="Academic">Academic</option>
+            <option value="Sports">Sports</option>
+            <option value="Social">Social</option>
+            <option value="Tech">Tech</option>
+          </select>
+        </div>
+        <button
+          type="submit"
+          class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          Update Details
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div id="view-requests" class="tab-content hidden">
+    <div class="bg-white rounded shadow border overflow-hidden">
+      <div id="requests-list" class="divide-y">
+        <div class="p-8 text-center text-gray-500">Loading requests...</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-members" class="tab-content hidden">
+    <div class="bg-white rounded shadow border overflow-hidden">
+      <table class="min-w-full leading-normal">
+        <thead>
+          <tr>
+            <th
+              class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              User
+            </th>
+            <th
+              class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              Email
+            </th>
+            <th
+              class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody id="members-list">
+          <!-- Members will be loaded here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  const clubId = "<%= club._id %>";
+  const clubOwnerId = "<%= club.owner._id %>";
+  const token = localStorage.getItem("token");
+
+  // Tab Switching Logic
+  function switchTab(tab) {
+    document
+      .querySelectorAll(".tab-content")
+      .forEach((el) => el.classList.add("hidden"));
+    document.getElementById(`view-${tab}`).classList.remove("hidden");
+
+    // Reset tab styles
+    document.querySelectorAll('[id^="tab-"]').forEach((el) => {
+      el.classList.remove(
+        "border-b-2",
+        "border-blue-600",
+        "font-bold",
+        "text-blue-600"
+      );
+      el.classList.add("text-gray-600");
+    });
+
+    // Active tab style
+    const activeBtn = document.getElementById(`tab-${tab}`);
+    activeBtn.classList.remove("text-gray-600");
+    activeBtn.classList.add(
+      "border-b-2",
+      "border-blue-600",
+      "font-bold",
+      "text-blue-600"
+    );
+
+    if (tab === "requests") loadRequests();
+    if (tab === "members") loadMembers();
+  }
+
+  // Update Club Form
+  document
+    .getElementById("updateClubForm")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(e.target));
+
+      try {
+        const res = await fetch(`/api/clubs/${clubId}`, {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+        if (res.ok) alert("Club updated successfully");
+        else alert("Failed to update");
+      } catch (err) {
+        console.error(err);
+      }
+    });
+
+  // Fetch Logic
+  async function loadRequests() {
+    const res = await fetch(`/api/clubs/${clubId}/requests`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    const container = document.getElementById("requests-list");
+
+    if (data.requests && data.requests.length > 0) {
+      container.innerHTML = data.requests
+        .map(
+          (req) => `
+                <div class="p-4 flex justify-between items-center">
+                    <div class="flex items-center">
+                        ${
+                          req.user.profilePicture
+                            ? `<img src="${req.user.profilePicture}" class="w-10 h-10 rounded-full mr-3">`
+                            : `<div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold mr-3">${req.user.firstName
+                                .charAt(0)
+                                .toUpperCase()}</div>`
+                        }
+                        <div>
+                            <p class="font-bold">${req.user.firstName} ${
+            req.user.lastName
+          }</p>
+                            <p class="text-sm text-gray-500">${req.message}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <button onclick="respond('${
+                          req.user._id
+                        }', 'approve')" class="bg-green-500 text-white px-3 py-1 rounded text-sm mr-2">Approve</button>
+                        <button onclick="respond('${
+                          req.user._id
+                        }', 'decline')" class="bg-red-500 text-white px-3 py-1 rounded text-sm">Decline</button>
+                    </div>
+                </div>
+            `
+        )
+        .join("");
+    } else {
+      container.innerHTML =
+        '<div class="p-8 text-center text-gray-500">No pending requests.</div>';
+    }
+  }
+
+  async function loadMembers() {
+    const res = await fetch(`/api/clubs/${clubId}/members`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    const container = document.getElementById("members-list");
+
+    if (data.members) {
+      container.innerHTML = data.members
+        .map(
+          (m) => `
+                <tr>
+                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <div class="flex items-center">
+                            <img class="w-10 h-10 rounded-full mr-3" src="${
+                              m.user.profilePicture ||
+                              "https://via.placeholder.com/40"
+                            }" />
+                            <p class="text-gray-900 whitespace-no-wrap">${
+                              m.user.firstName
+                            } ${m.user.lastName}</p>
+                        </div>
+                    </td>
+                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <p class="text-gray-900 whitespace-no-wrap">${
+                          m.user.email
+                        }</p>
+                    </td>
+                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        ${
+                          m.user._id !== clubOwnerId
+                            ? `<button onclick="removeMember('${m.user._id}')" class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600">Remove</button>`
+                            : '<span class="text-gray-500">Owner</span>'
+                        }
+                    </td>
+                </tr>
+            `
+        )
+        .join("");
+    }
+  }
+
+  async function respond(userId, action) {
+    const res = await fetch(`/api/clubs/${clubId}/requests/${userId}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ action }),
+    });
+    if (res.ok) {
+      loadRequests();
+      loadMembers();
+    } else alert("Error responding to request");
+  }
+
+  async function removeMember(userId) {
+    if (confirm("Are you sure you want to remove this member?")) {
+      const res = await fetch(`/api/clubs/${clubId}/members/${userId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        loadMembers();
+        alert("Member removed successfully");
+      } else {
+        alert("Error removing member");
+      }
+    }
+  }
+</script>
+
+<%- include('../../../partials/footer') %>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Campus Connect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+      /* Custom scrollbar for better aesthetics */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e0;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #a0aec0;
+      }
+
+      .token-link {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen">
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+          <div class="flex items-center">
+            <a href="/" class="flex-shrink-0 flex items-center">
+              <i class="fas fa-graduation-cap text-blue-600 text-3xl mr-2"></i>
+              <span class="font-bold text-xl tracking-tight text-gray-900"
+                >Campus Connect</span
+              >
+            </a>
+
+            <div class="hidden md:ml-6 md:flex md:space-x-8">
+              <a
+                href="/"
+                class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                Home
+              </a>
+
+              <a
+                href="/clubs"
+                id="nav-explore-clubs"
+                class="token-link border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                Explore Clubs
+              </a>
+
+              <a
+                href="#"
+                id="nav-dashboard"
+                class="hidden token-link border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                Dashboard
+              </a>
+            </div>
+          </div>
+
+          <div class="flex items-center">
+            <div id="auth-buttons" class="hidden md:flex space-x-4">
+              <a
+                href="/api/auth/login"
+                class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                >Log in</a
+              >
+              <a
+                href="/api/auth/register"
+                class="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium shadow-sm transition"
+                >Sign up</a
+              >
+            </div>
+
+            <div
+              id="user-menu"
+              class="hidden ml-3 relative flex items-center space-x-4">
+              <a
+                href="/api/users/notifications"
+                class="token-link text-gray-400 hover:text-gray-500 relative">
+                <span class="sr-only">View notifications</span>
+                <i class="fas fa-bell text-xl"></i>
+                <span
+                  id="notif-badge"
+                  class="absolute top-0 right-0 block h-2 w-2 rounded-full ring-2 ring-white bg-red-400 hidden"></span>
+              </a>
+
+              <div class="relative ml-3">
+                <button
+                  onclick="toggleProfileMenu()"
+                  class="bg-white rounded-full flex text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                  <img
+                    id="header-avatar"
+                    class="h-8 w-8 rounded-full object-cover border border-gray-200"
+                    src="https://via.placeholder.com/32"
+                    alt="" />
+                </button>
+
+                <div
+                  id="profile-dropdown"
+                  class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 z-50">
+                  <div class="px-4 py-2 border-b">
+                    <p class="text-xs text-gray-500">Signed in as</p>
+                    <p
+                      id="header-username"
+                      class="text-sm font-bold text-gray-900 truncate">
+                      User
+                    </p>
+                  </div>
+
+                  <a
+                    href="/api/users/profile"
+                    class="token-link block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >Your Profile</a
+                  >
+
+                  <a
+                    href="/api/clubs/my"
+                    id="nav-owner-dash"
+                    class="hidden token-link block px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 font-bold"
+                    >Owner Portal</a
+                  >
+
+                  <a
+                    href="#"
+                    onclick="logout()"
+                    class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                    >Sign out</a
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const token = localStorage.getItem("token");
+        const userStr = localStorage.getItem("user");
+        const role = localStorage.getItem("role");
+
+        // 1. Check Auth State
+        if (token && userStr) {
+          const user = JSON.parse(userStr);
+
+          // Toggle UI Elements
+          document.getElementById("auth-buttons").classList.add("hidden");
+          document.getElementById("auth-buttons").classList.remove("md:flex");
+
+          const userMenu = document.getElementById("user-menu");
+          userMenu.classList.remove("hidden");
+          userMenu.classList.add("flex");
+
+          // Populate User Info
+          document.getElementById("header-username").textContent =
+            user.firstName;
+          document.getElementById("header-avatar").src =
+            user.profilePicture || "https://via.placeholder.com/32";
+
+          // 2. CONFIGURE DASHBOARD LINKS BASED ON ROLE
+          const dashboardLink = document.getElementById("nav-dashboard");
+          dashboardLink.classList.remove("hidden");
+          dashboardLink.classList.add("inline-flex");
+
+          let dashUrl = "/api/users/dashboard"; // Default User Dashboard
+
+          if (role === "club_owner") {
+            // FIX: Club Owners MUST go to /api/clubs/my to get the club list data
+            dashUrl = "/api/clubs/my";
+
+            // Show Dropdown Link for Owner
+            const ownerLink = document.getElementById("nav-owner-dash");
+            ownerLink.classList.remove("hidden");
+            // We set href below in the loop
+          } else if (role === "admin") {
+            dashUrl = "/api/admin/dashboard";
+            // Hide Explore Clubs for admin users
+            document
+              .getElementById("nav-explore-clubs")
+              .classList.add("hidden");
+          }
+
+          // Set the main dashboard link
+          dashboardLink.href = dashUrl;
+
+          // 3. APPEND TOKENS TO ALL LINKS
+          // This ensures clicking "Dashboard" sends the token immediately
+          document.querySelectorAll(".token-link").forEach((link) => {
+            // If it's the owner portal link, force it to the correct path
+            if (link.id === "nav-owner-dash") link.href = "/api/clubs/my";
+
+            const separator = link.href.includes("?") ? "&" : "?";
+            link.href = `${link.href}${separator}token=${token}`;
+          });
+        } else {
+          // Not logged in? Ensure dashboard is hidden
+          document.getElementById("nav-dashboard").classList.add("hidden");
+        }
+      });
+
+      function toggleProfileMenu() {
+        document.getElementById("profile-dropdown").classList.toggle("hidden");
+      }
+
+      // Close dropdown when clicking outside
+      document.addEventListener("click", (e) => {
+        const menu = document.getElementById("profile-dropdown");
+        const btn = document.querySelector(
+          'button[onclick="toggleProfileMenu()"]'
+        );
+        if (
+          !menu.classList.contains("hidden") &&
+          !menu.contains(e.target) &&
+          !btn.contains(e.target)
+        ) {
+          menu.classList.add("hidden");
+        }
+      });
+
+      function logout() {
+        localStorage.clear();
+        window.location.href = "/api/auth/login";
+      }
+    </script>
+
+    <main class="flex-grow"></main>
+  </body>
+</html>

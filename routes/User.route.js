@@ -17,6 +17,8 @@ const {
   uploadProfilePicture,
   uploadProfilePictureMiddleware,
 } = require("../controllers/User.controller");
+const { createPost, getClubPosts } = require("../controllers/club.controller");
+const { getAllPosts } = require("../controllers/admin.controller");
 
 // Protected user routes
 router.get(
@@ -58,7 +60,7 @@ router.get(
     // Check if this is a page request (browser navigation)
     if (req.headers.accept && req.headers.accept.includes("text/html")) {
       // Page request - render the view
-      res.render("dashboard/user/clubs", { user: req.user });
+      res.render("dashboards/user/clubs", { user: req.user });
     } else {
       // API request - return JSON data
       return searchClubs(req, res);
@@ -80,7 +82,7 @@ router.get(
       return getNotifications(req, res);
     } else {
       // Page request - render the view
-      res.render("dashboard/user/notifications");
+      res.render("dashboards/user/notification");
     }
   }
 );
@@ -102,7 +104,39 @@ router.get(
   "/posts",
   authenticate,
   authorize("user", "club_owner", "admin"),
-  getUserPosts
+  (req, res) => {
+    // Check if this is an API request (has Accept header for JSON or query param)
+    if (
+      (req.headers.accept && req.headers.accept.includes("application/json")) ||
+      req.query.format === "json" ||
+      req.xhr
+    ) {
+      // API request - return JSON data
+      return getUserPosts(req, res);
+    } else {
+      // Page request - render the view
+      return getUserPosts(req, res);
+    }
+  }
+);
+
+router.get(
+  "/create-post",
+  authenticate,
+  authorize("club_owner"),
+  (req, res) => {
+    res.render("dashboards/club_owner/posts", { user: req.user, clubId: req.query.clubId });
+  }
+);
+
+// Post routes
+router.post("/posts", authenticate, authorize("club_owner"), createPost);
+router.get("/posts/all", authenticate, authorize("admin"), getAllPosts);
+router.get(
+  "/posts/club/:id",
+  authenticate,
+  authorize("user", "club_owner", "admin"),
+  getClubPosts
 );
 
 router.get(
@@ -124,7 +158,7 @@ router.get(
   authenticate,
   authorize("user", "club_owner", "admin"),
   (req, res) => {
-    res.render("dashboard/user/clubs");
+    res.render("dashboards/user/clubs");
   }
 );
 

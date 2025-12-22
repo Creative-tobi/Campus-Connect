@@ -18,19 +18,24 @@ const {
 
 // Protected admin routes
 router.get("/dashboard", authenticate, authorize("admin"), (req, res) => {
-  res.render("dashboard/admin/dashboard");
+  res.render("dashboards/admin/dashboard");
 });
-router.get("/dashboard/data", authenticate, authorize("admin"), getAdminDashboard);
+router.get(
+  "/dashboard/data",
+  authenticate,
+  authorize("admin"),
+  getAdminDashboard
+);
 router.get("/users", authenticate, authorize("admin"), (req, res) => {
-  res.render("dashboard/admin/users");
+  res.render("dashboards/admin/user");
 });
 router.get("/users/data", authenticate, authorize("admin"), getAllUsers);
 router.get("/clubs", authenticate, authorize("admin"), (req, res) => {
-  res.render("dashboard/admin/clubs");
+  res.render("dashboards/admin/clubs");
 });
 router.get("/clubs/data", authenticate, authorize("admin"), getAllClubs);
 router.get("/posts", authenticate, authorize("admin"), (req, res) => {
-  res.render("dashboard/admin/posts");
+  res.render("dashboards/admin/post");
 });
 router.get("/posts/data", authenticate, authorize("admin"), getAllPosts);
 router.put("/clubs/:id/approve", authenticate, authorize("admin"), approveClub);

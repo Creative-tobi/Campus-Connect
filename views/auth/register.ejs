@@ -1,193 +1,95 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Join Now | Campus Connect</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-</head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
-    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <div class="text-center mb-6">
-            <div class="bg-blue-600 text-white p-2 rounded-md inline-block mx-auto">
-                <i class="fas fa-university text-2xl"></i>
-            </div>
-            <h2 class="mt-4 text-2xl font-bold text-gray-900">Join CampusConnect</h2>
-        </div>
+<%- include('../partials/header') %>
 
-        <form id="registerForm">
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                    <label for="firstName" class="block text-sm font-medium text-gray-700">First Name *</label>
-                    <input type="text" id="firstName" name="firstName" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                </div>
-                <div>
-                    <label for="lastName" class="block text-sm font-medium text-gray-700">Last Name *</label>
-                    <input type="text" id="lastName" name="lastName" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                </div>
-            </div>
+<div class="max-w-md mx-auto bg-white p-8 border border-gray-200 rounded-lg shadow-sm mt-10">
+    
+    <div id="step-register">
+        <h2 class="text-2xl font-bold mb-2 text-center">Create Account</h2>
+        <p class="text-center text-gray-500 mb-6">Join the campus community</p>
 
-            <div class="mt-4">
-                <label for="email" class="block text-sm font-medium text-gray-700">Email Address *</label>
-                <input type="email" id="email" name="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+        <form id="registerForm" class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <input type="text" name="firstName" placeholder="First Name" required class="p-2 border rounded w-full">
+                <input type="text" name="lastName" placeholder="Last Name" required class="p-2 border rounded w-full">
             </div>
-
-            <div class="mt-4">
-                <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number *</label>
-                <input type="tel" id="phone" name="phone" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-            </div>
-
-            <div class="mt-4">
-                <label for="faculty" class="block text-sm font-medium text-gray-700">Faculty *</label>
-                <input type="text" id="faculty" name="faculty" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-            </div>
-
-            <div class="mt-4">
-                <label for="password" class="block text-sm font-medium text-gray-700">Password *</label>
-                <input type="password" id="password" name="password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-            </div>
-
-            <div class="mt-6">
-                <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                    Join Now
-                </button>
-            </div>
+            <input type="email" name="email" id="reg-email" placeholder="Student Email" required class="p-2 border rounded w-full">
+            <input type="tel" name="phone" placeholder="Phone Number" required class="p-2 border rounded w-full">
+            <input type="text" name="faculty" placeholder="Faculty/Department" required class="p-2 border rounded w-full">
+            <input type="password" name="password" placeholder="Password" required class="p-2 border rounded w-full">
+            
+            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded font-bold hover:bg-blue-700">Sign Up</button>
         </form>
-
-        <p class="mt-4 text-center text-sm text-gray-600">
-            Already have an account? <a href="/api/auth/login" class="font-medium text-blue-600 hover:text-blue-500">Sign In</a>
-        </p>
-
-        <!-- OTP Verification Section (Initially Hidden) -->
-        <div id="otpVerificationSection" class="hidden mt-6">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Verify Your Account</h3>
-            <p class="text-sm text-gray-600 mb-4">An OTP has been sent to your email address. Please enter it below.</p>
-            <form id="otpVerificationForm">
-                <div class="mb-4">
-                    <label for="verificationEmail" class="block text-sm font-medium text-gray-700">Email *</label>
-                    <input type="email" id="verificationEmail" name="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                </div>
-                <div class="mb-4">
-                    <label for="otp" class="block text-sm font-medium text-gray-700">OTP *</label>
-                    <input type="text" id="otp" name="otp" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                </div>
-                <div class="flex justify-between">
-                    <button type="button" id="resendOtpBtn" class="text-sm text-blue-600 hover:text-blue-500">Resend OTP?</button>
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
-                        Verify OTP
-                    </button>
-                </div>
-            </form>
-        </div>
+        <p class="mt-4 text-center text-sm">Already a member? <a href="/api/auth/login" class="text-blue-600">Login</a></p>
     </div>
 
-    <script>
-        const registerForm = document.getElementById('registerForm');
-        const otpVerificationSection = document.getElementById('otpVerificationSection');
-        const otpVerificationForm = document.getElementById('otpVerificationForm');
-        const resendOtpBtn = document.getElementById('resendOtpBtn');
-        const verificationEmailInput = document.getElementById('verificationEmail');
+    <div id="step-otp" class="hidden text-center">
+        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-envelope text-green-600 text-2xl"></i>
+        </div>
+        <h2 class="text-2xl font-bold mb-2">Verify Email</h2>
+        <p class="text-gray-500 mb-6 text-sm">We sent a code to <span id="display-email" class="font-bold"></span></p>
 
-        // Handle Registration Form Submission
-        registerForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
+        <form id="otpForm" class="space-y-4">
+            <input type="text" name="otp" placeholder="Enter 4-digit OTP" maxlength="4" class="p-3 border rounded w-full text-center text-2xl tracking-widest" required>
+            <button type="submit" class="w-full bg-green-600 text-white py-2 rounded font-bold hover:bg-green-700">Verify Account</button>
+        </form>
+    </div>
 
-            const formData = new FormData(registerForm);
-            const userData = Object.fromEntries(formData.entries());
+</div>
 
-            try {
-                const response = await fetch('/api/auth/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(userData)
-                });
+<script>
+    const registerForm = document.getElementById('registerForm');
+    const otpForm = document.getElementById('otpForm');
+    let userEmail = '';
 
-                if (response.ok) {
-                    const result = await response.json();
-                    alert(result.message); // "User registered successfully..."
+    // Handle Registration
+    registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(e.target));
+        userEmail = data.email;
 
-                    // Show OTP verification section
-                    otpVerificationSection.classList.remove('hidden');
-                    // Pre-fill the email field in the OTP form
-                    verificationEmailInput.value = userData.email;
-                    // Hide the registration form
-                    registerForm.classList.add('hidden');
-                } else {
-                    const errorData = await response.json();
-                    alert('Registration failed: ' + errorData.error);
-                }
-            } catch (error) {
-                console.error('Registration error:', error);
-                alert('An error occurred during registration.');
+        try {
+            const res = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+
+            if (res.ok) {
+                // Switch to OTP view
+                document.getElementById('step-register').classList.add('hidden');
+                document.getElementById('step-otp').classList.remove('hidden');
+                document.getElementById('display-email').textContent = userEmail;
+            } else {
+                alert(result.error);
             }
-        });
+        } catch (err) { console.error(err); }
+    });
 
-        // Handle OTP Verification Form Submission
-        otpVerificationForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
+    // Handle OTP Verification
+    otpForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const otp = new FormData(e.target).get('otp');
 
-            const otpData = Object.fromEntries(new FormData(otpVerificationForm));
+        try {
+            const res = await fetch('/api/auth/verify-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: userEmail, otp })
+            });
+            const result = await res.json();
 
-            try {
-                const response = await fetch('/api/auth/verify-otp', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(otpData)
-                });
-
-                if (response.ok) {
-                    const result = await response.json();
-                    alert(result.message); // "Account verified successfully"
-                    // Optionally store token in localStorage if returned
-                    if (result.token) {
-                        sessionStorage.setItem('token', result.token);
-                    }
-                    // Redirect to dashboard or login page
-                    window.location.href = '/api/auth/login';
-                } else {
-                    const errorData = await response.json();
-                    alert('Verification failed: ' + errorData.error);
-                }
-            } catch (error) {
-                console.error('Verification error:', error);
-                alert('An error occurred during verification.');
+            if (res.ok) {
+                // Save Token and Redirect
+                localStorage.setItem('token', result.token);
+                localStorage.setItem('user', JSON.stringify(result.user));
+                localStorage.setItem('role', result.user.role);
+                window.location.href = `/api/users/dashboard?token=${result.token}`;
+            } else {
+                alert(result.error);
             }
-        });
+        } catch (err) { console.error(err); }
+    });
+</script>
 
-        // Handle Resend OTP
-        resendOtpBtn.addEventListener('click', async function() {
-            const emailToResend = verificationEmailInput.value;
-            if (!emailToResend) {
-                alert('Please enter your email address.');
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/auth/regenerate-otp', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ email: emailToResend })
-                });
-
-                if (response.ok) {
-                    const result = await response.json();
-                    alert(result.message); // "New OTP sent to your email"
-                } else {
-                    const errorData = await response.json();
-                    alert('Failed to resend OTP: ' + errorData.error);
-                }
-            } catch (error) {
-                console.error('Resend OTP error:', error);
-                alert('An error occurred while resending the OTP.');
-            }
-        });
-    </script>
-</body>
-</html>
+<%- include('../partials/footer') %>

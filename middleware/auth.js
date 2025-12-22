@@ -53,7 +53,14 @@ const authenticate = async (req, res, next) => {
   } catch (error) {
     console.error("Auth error:", error);
     if (error.name === "TokenExpiredError") {
-      return res.status(401).json({ error: "Token has expired. Please log in again." });
+      return res
+        .status(401)
+        .json({ error: "Token has expired. Please log in again." });
+    }
+    if (error.name === "JsonWebTokenError") {
+      return res
+        .status(401)
+        .json({ error: "Invalid token. Please log in again." });
     }
     return res.status(401).json({ error: "Not authorized, token failed" });
   }

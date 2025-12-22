@@ -1,0 +1,198 @@
+<%- include('../../partials/header') %>
+
+<div class="container mx-auto">
+  <div class="bg-blue-600 rounded-lg p-8 mb-8 text-white text-center">
+    <h1 class="text-3xl font-bold mb-2">Explore Clubs</h1>
+    <p class="mb-6">Find your community on Campus Connect</p>
+
+    <div class="max-w-xl mx-auto flex gap-2">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search clubs..."
+        class="flex-grow p-3 rounded-md text-gray-800 focus:outline-none" />
+      <select
+        id="categoryInput"
+        class="p-3 rounded-md text-gray-800 focus:outline-none">
+        <option value="">All Categories</option>
+        <option value="Academic">Academic</option>
+        <option value="Tech">Tech</option>
+        <option value="Sports">Sports</option>
+        <option value="Social">Social</option>
+      </select>
+      <button
+        onclick="fetchClubs()"
+        class="bg-gray-800 px-6 py-3 rounded-md hover:bg-gray-900 font-bold">
+        Search
+      </button>
+    </div>
+  </div>
+
+  <div
+    id="clubs-grid"
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", fetchClubs);
+
+  async function fetchClubs() {
+    const token = localStorage.getItem("token");
+    const search = document.getElementById("searchInput").value;
+    const category = document.getElementById("categoryInput").value;
+
+    // Construct Query
+    const params = new URLSearchParams();
+    if (search) params.append("search", search);
+    if (category) params.append("category", category);
+    // Use 'format=json' or Accept header to get JSON from the controller
+    params.append("format", "json");
+
+    try {
+      const res = await fetch(`/api/users/clubs?${params.toString()}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      const grid = document.getElementById("clubs-grid");
+
+      grid.innerHTML = "";
+
+      if (data.clubs && data.clubs.length > 0) {
+        data.clubs.forEach((club) => {
+          let actionButton = "";
+          let ownerIndicator = "";
+
+          if (club.isOwner) {
+            actionButton = `<a href="/api/clubs/my" class="token-link block text-center w-full bg-purple-500 text-white font-bold py-2 rounded hover:bg-purple-600">Manage Club</a>`;
+            ownerIndicator =
+              '<span class="inline-block bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full mb-2">Your Club</span>';
+          } else if (club.isMember) {
+            actionButton = `<div class="flex gap-2">
+                                <a href="/api/clubs/${club._id}" class="token-link flex-1 text-center bg-blue-50 text-blue-600 font-bold py-2 rounded hover:bg-blue-100">View Club</a>
+                                <button onclick="leaveClub('${club._id}', '${club.name}')" class="flex-1 bg-red-500 text-white py-2 rounded hover:bg-red-600">Leave</button>
+                            </div>`;
+          } else {
+            actionButton = `<button onclick="joinClub('${club._id}')" class="block text-center w-full bg-green-500 text-white font-bold py-2 rounded hover:bg-green-600">Join Club</button>`;
+          }
+
+          grid.innerHTML += `
+                        <div class="bg-white border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition">
+                            <div class="h-32 bg-gray-200 relative">
+                                ${
+                                  club.banner
+                                    ? `<img src="${club.banner}" class="w-full h-full object-cover">`
+                                    : `<div class="w-full h-full bg-blue-500 flex items-center justify-center text-white font-bold text-4xl">${club.name
+                                        .charAt(0)
+                                        .toUpperCase()}</div>`
+                                }
+                            </div>
+                            <div class="p-5 pt-10 relative">
+                                ${
+                                  club.logo
+                                    ? `<img src="${club.logo}" class="w-16 h-16 rounded-full border-4 border-white absolute -top-8 left-4 bg-white">`
+                                    : `<div class="w-16 h-16 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-xl border-4 border-white absolute -top-8 left-4">${club.name
+                                        .charAt(0)
+                                        .toUpperCase()}</div>`
+                                }
+                                <div class="mb-2">
+                                    ${ownerIndicator}
+                                </div>
+                                <h3 class="font-bold text-lg">${club.name}</h3>
+                                <p class="text-sm text-blue-600 mb-2">${
+                                  club.category
+                                }</p>
+                                <p class="text-gray-500 text-sm mb-4 line-clamp-2">${
+                                  club.description
+                                }</p>
+                                ${actionButton}
+                            </div>
+                        </div>
+                    `;
+        });
+        // Re-run the auto-token script from header since we added new links
+        document.dispatchEvent(new Event("DOMContentLoaded"));
+      } else {
+        grid.innerHTML = `<div class="col-span-3 text-center text-gray-400 py-10">No clubs found matching your criteria.</div>`;
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function fetchJoinedClubs() {
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch("/api/users/clubs/joined", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      const container = document.getElementById("joined-clubs");
+
+      if (data.clubs && data.clubs.length > 0) {
+        container.innerHTML = data.clubs
+          .map(
+            (club) => `
+                        <div class="bg-white border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition">
+                            <div class="h-24 bg-gray-200 relative">
+                                ${
+                                  club.banner
+                                    ? `<img src="${club.banner}" class="w-full h-full object-cover">`
+                                    : `<div class="w-full h-full bg-green-500 flex items-center justify-center text-white font-bold text-2xl">${club.name
+                                        .charAt(0)
+                                        .toUpperCase()}</div>`
+                                }
+                            </div>
+                            <div class="p-4">
+                                <h3 class="font-bold text-lg">${club.name}</h3>
+                                <p class="text-sm text-green-600 mb-2">${
+                                  club.category
+                                }</p>
+                                <div class="flex gap-2">
+                                    <a href="/api/clubs/${
+                                      club._id
+                                    }" class="token-link flex-1 text-center bg-green-50 text-green-600 font-bold py-2 rounded hover:bg-green-100">
+                                        View
+                                    </a>
+                                    <button onclick="leaveClub('${
+                                      club._id
+                                    }')" class="flex-1 bg-red-500 text-white py-2 rounded hover:bg-red-600">
+                                        Leave
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `
+          )
+          .join("");
+        // Re-run the auto-token script from header since we added new links
+        document.dispatchEvent(new Event("DOMContentLoaded"));
+      } else {
+        container.innerHTML = `<div class="text-center text-white py-4">You haven't joined any clubs yet.</div>`;
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function leaveClub(clubId) {
+    if (confirm("Are you sure you want to leave this club?")) {
+      const token = localStorage.getItem("token");
+      try {
+        const res = await fetch(`/api/users/clubs/${clubId}/leave`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          alert("You have left the club successfully");
+          fetchJoinedClubs(); // Refresh the joined clubs list
+        } else {
+          alert("Error leaving the club");
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  }
+</script>
+
+<%- include('../../partials/footer') %>

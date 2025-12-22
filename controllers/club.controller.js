@@ -124,7 +124,7 @@ const getMyClubs = async (req, res) => {
       return res.json({ clubs });
     } else {
       // Page request - render the view
-      res.render("dashboard/club_owner/dashboard", { clubs });
+      res.render("dashboards/club_owner/dashboard", { clubs });
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -245,7 +245,7 @@ const getClubById = async (req, res) => {
         return res.json({ club });
       } else {
         // Page request - render the view
-        res.render("dashboard/club_owner/club/detail", { club });
+        res.render("dashboards/club_owner/club/detail", { club });
       }
     }
   } catch (error) {

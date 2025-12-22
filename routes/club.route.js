@@ -14,7 +14,7 @@ const {
   createPost,
   getClubPosts,
   deletePost,
-  // removeMember,
+  removeMember,
   // getClubManage,
   uploadClubImageMiddleware,
 } = require("../controllers/club.controller");
@@ -67,12 +67,12 @@ router.get(
   // allowRoles("club_owner"),
   getClubMembers
 );
-// router.delete(
-//   "/:id/members/:memberId",
-//   authenticate,
-//   allowRoles("club_owner"),
-//   removeMember
-// );
+router.delete(
+  "/:id/members/:memberId",
+  authenticate,
+  authorize("club_owner"),
+  removeMember
+);
 
 // Routes for posts (club owners only for creating/deleting)
 router.post(

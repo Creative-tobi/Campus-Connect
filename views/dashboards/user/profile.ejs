@@ -1,0 +1,187 @@
+<%- include('../../partials/header') %>
+
+<div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+  <div class="md:col-span-1">
+    <div class="bg-white p-6 rounded-lg shadow border text-center relative">
+      <div class="relative w-32 h-32 mx-auto mb-4 group">
+        <% if (user.profilePicture) { %>
+        <img
+          src="<%= user.profilePicture %>"
+          class="w-full h-full rounded-full object-cover border-4 border-gray-100" />
+        <% } else { %>
+        <div
+          class="w-full h-full rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-2xl border-4 border-gray-100">
+          <%= user.firstName.charAt(0).toUpperCase() %>
+        </div>
+        <% } %>
+        <div
+          onclick="document.getElementById('pfpInput').click()"
+          class="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 cursor-pointer transition">
+          <i class="fas fa-camera"></i>
+        </div>
+        <input type="file" id="pfpInput" class="hidden" accept="image/*" />
+      </div>
+
+      <h2 class="text-xl font-bold">
+        <%= user.firstName %> <%= user.lastName %>
+      </h2>
+      <p class="text-gray-500"><%= user.faculty %></p>
+      <div class="mt-4 flex justify-around text-sm border-t pt-4">
+        <div>
+          <span class="block font-bold text-lg"><%= joinedClubsCount %></span>
+          <span class="text-gray-500">Clubs</span>
+        </div>
+        <div>
+          <span class="block font-bold text-lg"><%= userPostsCount %></span>
+          <span class="text-gray-500">Posts</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="md:col-span-2 space-y-6">
+    <div class="bg-white p-6 rounded-lg shadow border">
+      <h3 class="font-bold text-lg mb-4 border-b pb-2">Edit Profile</h3>
+      <form id="profileForm">
+        <div class="grid grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700"
+              >First Name</label
+            >
+            <input
+              type="text"
+              name="firstName"
+              value="<%= user.firstName %>"
+              class="w-full border p-2 rounded mt-1" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700"
+              >Last Name</label
+            >
+            <input
+              type="text"
+              name="lastName"
+              value="<%= user.lastName %>"
+              class="w-full border p-2 rounded mt-1" />
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700">Phone</label>
+          <input
+            type="text"
+            name="phone"
+            value="<%= user.phone %>"
+            class="w-full border p-2 rounded mt-1" />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700">Faculty</label>
+          <input
+            type="text"
+            name="faculty"
+            value="<%= user.faculty %>"
+            class="w-full border p-2 rounded mt-1" />
+        </div>
+        <button
+          type="submit"
+          class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          Save Changes
+        </button>
+      </form>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow border">
+      <h3 class="font-bold text-lg mb-4 border-b pb-2 text-red-600">
+        Security
+      </h3>
+      <form id="passwordForm">
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700"
+            >Current Password</label
+          >
+          <input
+            type="password"
+            name="currentPassword"
+            required
+            class="w-full border p-2 rounded mt-1" />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700"
+            >New Password</label
+          >
+          <input
+            type="password"
+            name="newPassword"
+            required
+            class="w-full border p-2 rounded mt-1" />
+        </div>
+        <button
+          type="submit"
+          class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+          Update Password
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  const token = localStorage.getItem("token");
+
+  // Handle Profile Picture Upload
+  document.getElementById("pfpInput").addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("profilePicture", file);
+
+    try {
+      const res = await fetch("/api/users/upload-profile-picture", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+      if (res.ok) window.location.reload();
+    } catch (err) {
+      console.error(err);
+    }
+  });
+
+  // Handle Profile Update
+  document
+    .getElementById("profileForm")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(e.target));
+      const res = await fetch("/api/users/profile", {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      if (res.ok) window.location.reload();
+      else alert("Update failed");
+    });
+
+  // Handle Password Change
+  document
+    .getElementById("passwordForm")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(e.target));
+      const res = await fetch("/api/auth/change-password", {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      const result = await res.json();
+      alert(result.message || result.error);
+      if (res.ok) e.target.reset();
+    });
+</script>
+
+<%- include('../../partials/footer') %>

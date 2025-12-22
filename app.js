@@ -59,6 +59,7 @@ const createInitialAdmin = async () => {
   app.use(bodyparser.json());
 
   app.use(express.static("public"));
+  app.use("/uploads", express.static("uploads"));
 
   app.set("views", path.join(__dirname, "views"));
 
@@ -123,7 +124,7 @@ const createInitialAdmin = async () => {
   });
 
   app.get("/clubs", (req, res) => {
-    res.render("dashboard/user/clubs", { title: "Clubs | CampusConnect" });
+    res.render("dashboards/user/clubs", { title: "Clubs | CampusConnect" });
   });
 
   // Error handling middleware
