@@ -25,7 +25,7 @@ router.get("/my", authenticate, authorize("club_owner"), getMyClubs);
 router.post(
   "/create",
   authenticate,
-  authorize("club_owner"),
+  authorize("user", "club_owner"),
   uploadClubImageMiddleware,
   createClub
 );

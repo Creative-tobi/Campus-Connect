@@ -14,7 +14,7 @@ const registerUser = async (req, res) => {
   try {
     const { firstName, lastName, email, password, phone, faculty } = req.body;
 
-    // Validation (add more as needed)
+    // Validation
     if (!firstName || !lastName || !email || !password || !phone || !faculty) {
       return res.status(400).json({ error: "All fields are required" });
     }
@@ -34,17 +34,18 @@ const registerUser = async (req, res) => {
         .json({ error: "User already exists with this phone number" });
     }
 
-    // Create user
-    const rounds = parseInt(process.env.BCRYPT_ROUNDS || "12", 10);
-    const hashedPassword = await bcrypt.hash(password, rounds);
+    // --- CHANGE IS HERE ---
+    // REMOVED: const hashedPassword = await bcrypt.hash(password, rounds);
+    // REMOVED: const rounds = ...
 
+    // Pass the PLAIN password. The User model will hash it before saving.
     const newUser = new User({
       firstName: firstName.trim(),
       lastName: lastName.trim(),
       email: email.toLowerCase().trim(),
-      password: hashedPassword,
+      password: password, // <--- Just pass the plain password!
       phone: phone.trim(),
-      faculty: faculty.trim(), // Add faculty
+      faculty: faculty.trim(),
     });
 
     // Generate OTP
@@ -83,7 +84,6 @@ Campus Connect Team`;
     res.status(500).json({ error: error.message });
   }
 };
-
 const verifyOtpController = async (req, res) => {
   try {
     const { email, otp } = req.body;
@@ -188,7 +188,7 @@ const loginUser = async (req, res) => {
       return res.status(400).json({ error: "Email and password are required" });
     }
 
-    const user = await User.findOne({ email: email.toLowerCase() });
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
     if (!user) {
       return res.status(401).json({ error: "Invalid credentials" });
     }

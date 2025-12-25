@@ -226,15 +226,15 @@ const rejectClub = async (req, res) => {
       });
       await notification.save();
 
-      const emailSubject = `Club Rejected and Deleted: ${club.name}`;
-      const emailText = `Dear ${owner.firstName} ${owner.lastName},
+//       const emailSubject = `Club Rejected and Deleted: ${club.name}`;
+//       const emailText = `Dear ${owner.firstName} ${owner.lastName},
 
-Unfortunately, your club "${club.name}" has been rejected by the admin and has been deleted from the platform.
+// Unfortunately, your club "${club.name}" has been rejected by the admin and has been deleted from the platform.
 
-Best regards,
-Campus Connect Team`;
+// Best regards,
+// Campus Connect Team`;
 
-      await sendEmail(owner.email, emailSubject, emailText);
+//       await sendEmail(owner.email, emailSubject, emailText);
     }
 
     res.json({ message: "Club rejected and deleted successfully" });
@@ -315,15 +315,15 @@ const deleteClub = async (req, res) => {
       });
       await notification.save();
 
-      const emailSubject = `Club Deleted: ${club.name}`;
-      const emailText = `Dear ${owner.firstName} ${owner.lastName},
+//       const emailSubject = `Club Deleted: ${club.name}`;
+//       const emailText = `Dear ${owner.firstName} ${owner.lastName},
 
-Your club "${club.name}" has been deleted by the admin.
+// Your club "${club.name}" has been deleted by the admin.
 
-Best regards,
-Campus Connect Team`;
+// Best regards,
+// Campus Connect Team`;
 
-      await sendEmail(owner.email, emailSubject, emailText);
+//       await sendEmail(owner.email, emailSubject, emailText);
     }
 
     res.json({ message: "Club deleted successfully" });
