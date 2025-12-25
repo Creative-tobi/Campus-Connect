@@ -1,62 +1,74 @@
 <%- include('../../partials/header') %>
 
-<div class="container mx-auto px-4 py-8">
-  <div class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
-    <p class="text-gray-500">System Overview & Statistics</p>
+<div class="container mx-auto px-4 py-6 md:py-8">
+  <div class="mb-6 md:mb-8">
+    <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Admin Dashboard</h1>
+    <p class="text-gray-500 text-sm md:text-base">System Overview & Statistics</p>
   </div>
 
   <div
     id="stats-container"
-    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <div class="bg-white p-6 rounded-lg shadow border animate-pulse h-32"></div>
-    <div class="bg-white p-6 rounded-lg shadow border animate-pulse h-32"></div>
-    <div class="bg-white p-6 rounded-lg shadow border animate-pulse h-32"></div>
-    <div class="bg-white p-6 rounded-lg shadow border animate-pulse h-32"></div>
+    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+    <div class="bg-white p-4 md:p-6 rounded-lg shadow border animate-pulse h-28 md:h-32"></div>
+    <div class="bg-white p-4 md:p-6 rounded-lg shadow border animate-pulse h-28 md:h-32"></div>
+    <div class="bg-white p-4 md:p-6 rounded-lg shadow border animate-pulse h-28 md:h-32"></div>
+    <div class="bg-white p-4 md:p-6 rounded-lg shadow border animate-pulse h-28 md:h-32"></div>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-    <div class="bg-white p-6 rounded-lg shadow border">
-      <h3 class="font-bold text-lg mb-4">Pending Approvals</h3>
-      <p class="text-gray-600 mb-4">
-        Review new club requests needing your attention.
-      </p>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+    
+    <div class="bg-white p-4 md:p-6 rounded-lg shadow border flex flex-col justify-between h-full">
+      <div>
+        <h3 class="font-bold text-lg mb-2">Pending Approvals</h3>
+        <p class="text-gray-600 text-sm mb-4">
+          Review new club requests needing your attention.
+        </p>
+      </div>
       <a
         href="/api/admin/clubs?status=pending"
-        class="token-link inline-block bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
+        class="token-link block w-full sm:w-auto text-center bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition shadow-sm">
         Go to Approvals
       </a>
     </div>
-    <div class="bg-white p-6 rounded-lg shadow border">
-      <h3 class="font-bold text-lg mb-4">Club Management</h3>
-      <p class="text-gray-600 mb-4">
-        View all clubs and manage them including deletion.
-      </p>
+
+    <div class="bg-white p-4 md:p-6 rounded-lg shadow border flex flex-col justify-between h-full">
+      <div>
+        <h3 class="font-bold text-lg mb-2">Club Management</h3>
+        <p class="text-gray-600 text-sm mb-4">
+          View all clubs and manage them including deletion.
+        </p>
+      </div>
       <a
         href="/api/admin/clubs"
-        class="token-link inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+        class="token-link block w-full sm:w-auto text-center bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition shadow-sm">
         Manage Clubs
       </a>
     </div>
-    <div class="bg-white p-6 rounded-lg shadow border">
-      <h3 class="font-bold text-lg mb-4">Post Management</h3>
-      <p class="text-gray-600 mb-4">
-        View all posts and manage them including deletion.
-      </p>
+
+    <div class="bg-white p-4 md:p-6 rounded-lg shadow border flex flex-col justify-between h-full">
+      <div>
+        <h3 class="font-bold text-lg mb-2">Post Management</h3>
+        <p class="text-gray-600 text-sm mb-4">
+          View all posts and manage them including deletion.
+        </p>
+      </div>
       <a
         href="/api/admin/posts"
-        class="token-link inline-block bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+        class="token-link block w-full sm:w-auto text-center bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition shadow-sm">
         Manage Posts
       </a>
     </div>
-    <div class="bg-white p-6 rounded-lg shadow border">
-      <h3 class="font-bold text-lg mb-4">User Management</h3>
-      <p class="text-gray-600 mb-4">
-        Manage users, roles, and account statuses.
-      </p>
+
+    <div class="bg-white p-4 md:p-6 rounded-lg shadow border flex flex-col justify-between h-full">
+      <div>
+        <h3 class="font-bold text-lg mb-2">User Management</h3>
+        <p class="text-gray-600 text-sm mb-4">
+          Manage users, roles, and account statuses.
+        </p>
+      </div>
       <a
         href="/api/admin/users"
-        class="token-link inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        class="token-link block w-full sm:w-auto text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition shadow-sm">
         Manage Users
       </a>
     </div>
@@ -80,58 +92,64 @@
       const stats = data.stats;
 
       const container = document.getElementById("stats-container");
+      
+      // Inject Responsive Stats Cards
       container.innerHTML = `
-                <div class="bg-white p-6 rounded-lg shadow border border-l-4 border-l-blue-500">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <p class="text-gray-500 text-sm">Total Users</p>
-                            <h2 class="text-3xl font-bold text-gray-800">${stats.totalUsers}</h2>
-                        </div>
-                        <div class="bg-blue-100 p-3 rounded-full text-blue-600">
-                            <i class="fas fa-users text-xl"></i>
-                        </div>
-                    </div>
+        <div class="bg-white p-4 md:p-6 rounded-lg shadow border border-l-4 border-l-blue-500 flex flex-col justify-center">
+            <div class="flex justify-between items-center">
+                <div>
+                    <p class="text-gray-500 text-xs md:text-sm font-medium uppercase">Total Users</p>
+                    <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mt-1">${stats.totalUsers}</h2>
                 </div>
+                <div class="bg-blue-100 p-3 rounded-full text-blue-600 flex-shrink-0">
+                    <i class="fas fa-users text-lg md:text-xl"></i>
+                </div>
+            </div>
+        </div>
 
-                <div class="bg-white p-6 rounded-lg shadow border border-l-4 border-l-green-500">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <p class="text-gray-500 text-sm">Active Clubs</p>
-                            <h2 class="text-3xl font-bold text-gray-800">${stats.totalClubs}</h2>
-                        </div>
-                        <div class="bg-green-100 p-3 rounded-full text-green-600">
-                            <i class="fas fa-building text-xl"></i>
-                        </div>
-                    </div>
+        <div class="bg-white p-4 md:p-6 rounded-lg shadow border border-l-4 border-l-green-500 flex flex-col justify-center">
+            <div class="flex justify-between items-center">
+                <div>
+                    <p class="text-gray-500 text-xs md:text-sm font-medium uppercase">Active Clubs</p>
+                    <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mt-1">${stats.totalClubs}</h2>
                 </div>
+                <div class="bg-green-100 p-3 rounded-full text-green-600 flex-shrink-0">
+                    <i class="fas fa-building text-lg md:text-xl"></i>
+                </div>
+            </div>
+        </div>
 
-                <div class="bg-white p-6 rounded-lg shadow border border-l-4 border-l-yellow-500">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <p class="text-gray-500 text-sm">Pending Approval</p>
-                            <h2 class="text-3xl font-bold text-gray-800">${stats.pendingClubs}</h2>
-                        </div>
-                        <div class="bg-yellow-100 p-3 rounded-full text-yellow-600">
-                            <i class="fas fa-hourglass-half text-xl"></i>
-                        </div>
-                    </div>
+        <div class="bg-white p-4 md:p-6 rounded-lg shadow border border-l-4 border-l-yellow-500 flex flex-col justify-center">
+            <div class="flex justify-between items-center">
+                <div>
+                    <p class="text-gray-500 text-xs md:text-sm font-medium uppercase">Pending</p>
+                    <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mt-1">${stats.pendingClubs}</h2>
                 </div>
+                <div class="bg-yellow-100 p-3 rounded-full text-yellow-600 flex-shrink-0">
+                    <i class="fas fa-hourglass-half text-lg md:text-xl"></i>
+                </div>
+            </div>
+        </div>
 
-                <div class="bg-white p-6 rounded-lg shadow border border-l-4 border-l-purple-500">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <p class="text-gray-500 text-sm">Total Posts</p>
-                            <h2 class="text-3xl font-bold text-gray-800">${stats.totalPosts}</h2>
-                        </div>
-                        <div class="bg-purple-100 p-3 rounded-full text-purple-600">
-                            <i class="fas fa-newspaper text-xl"></i>
-                        </div>
-                    </div>
+        <div class="bg-white p-4 md:p-6 rounded-lg shadow border border-l-4 border-l-purple-500 flex flex-col justify-center">
+            <div class="flex justify-between items-center">
+                <div>
+                    <p class="text-gray-500 text-xs md:text-sm font-medium uppercase">Total Posts</p>
+                    <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mt-1">${stats.totalPosts}</h2>
                 </div>
-            `;
+                <div class="bg-purple-100 p-3 rounded-full text-purple-600 flex-shrink-0">
+                    <i class="fas fa-newspaper text-lg md:text-xl"></i>
+                </div>
+            </div>
+        </div>
+      `;
     } catch (error) {
       console.error(error);
-      alert("Error loading dashboard data");
+      document.getElementById("stats-container").innerHTML = `
+        <div class="col-span-full text-center text-red-500 py-4">
+            <i class="fas fa-exclamation-circle mr-2"></i> Error loading dashboard data
+        </div>
+      `;
     }
   });
 </script>
