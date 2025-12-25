@@ -1,176 +1,151 @@
-<%- include('partials/header') %>
+<%- include('partials/header') %> 
 
-<div class="relative overflow-hidden bg-white">
-    <div class="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
-    <div class="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-100 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
-    <div class="absolute -bottom-32 left-20 w-72 h-72 bg-pink-100 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000"></div>
-
-    <div class="relative pt-16 pb-20 sm:pt-24 sm:pb-32 lg:pb-40 overflow-hidden">
-        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
-            <h1 class="text-5xl tracking-tight font-extrabold text-gray-900 sm:text-6xl md:text-7xl">
-                <span class="block">Level Up Your</span>
-                <span class="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-                    Campus Life
-                </span>
-            </h1>
-            <p class="mt-6 max-w-2xl mx-auto text-xl text-gray-500">
-                The ultimate social network for students, lecturers, and clubs. Connect, collaborate, and discover your tribe at Campus Connect.
-            </p>
-            
-            <div class="mt-10 max-w-sm mx-auto sm:max-w-none sm:flex sm:justify-center gap-4">
-                <div id="hero-cta-primary">
-                    <a href="/api/auth/register" class="flex items-center justify-center px-8 py-4 border border-transparent text-lg font-medium rounded-xl text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10 transition transform hover:-translate-y-1 shadow-lg shadow-blue-500/30">
-                        Get Started <i class="fas fa-arrow-right ml-2"></i>
-                    </a>
-                </div>
-                <div id="hero-cta-secondary">
-                    <a href="/clubs" class="flex items-center justify-center px-8 py-4 border border-transparent text-lg font-medium rounded-xl text-blue-700 bg-blue-50 hover:bg-blue-100 md:py-4 md:text-lg md:px-10 transition">
-                        Explore Clubs
-                    </a>
-                </div>
+<div class="bg-white min-h-screen flex flex-col">
+    
+    <div class="relative bg-white overflow-hidden border-b border-gray-200">
+        <div class="max-w-7xl mx-auto">
+            <div class="relative z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32 pt-20 px-4 sm:px-6 lg:px-8">
+                
+                <main class="mt-10 mx-auto max-w-7xl sm:mt-12 md:mt-16 lg:mt-20 xl:mt-28">
+                    <div class="sm:text-center lg:text-left">
+                        <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
+                            <span class="block xl:inline">Level up your</span>
+                            <span class="block text-blue-600 xl:inline">Campus Life</span>
+                        </h1>
+                        <p class="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
+                            The ultimate social network for students, lecturers, and clubs. Connect, collaborate, and discover your tribe at Campus Connect.
+                        </p>
+                        
+                        <div class="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start gap-3">
+                            <div id="hero-cta-primary" class="rounded-md shadow">
+                                <a href="/api/auth/register" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10">
+                                    Get Started
+                                </a>
+                            </div>
+                            
+                            <div id="hero-cta-secondary" class="mt-3 sm:mt-0 sm:ml-3">
+                                <a href="/clubs" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 md:py-4 md:text-lg md:px-10">
+                                    Explore Clubs
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </main>
             </div>
+        </div>
+        
+        <div class="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2 bg-gray-50">
+            <img class="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full" src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Students on campus">
         </div>
     </div>
 
-    <div class="bg-gray-900 py-12 relative z-10">
+    <div class="bg-gray-800 py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-2 gap-8 md:grid-cols-4 text-center">
                 <div>
-                    <div class="text-4xl font-bold text-white">500+</div>
-                    <div class="text-gray-400 mt-1">Students</div>
+                    <div class="text-3xl md:text-4xl font-bold text-white">500+</div>
+                    <div class="text-gray-400 mt-1 text-sm md:text-base">Students</div>
                 </div>
                 <div>
-                    <div class="text-4xl font-bold text-white">50+</div>
-                    <div class="text-gray-400 mt-1">Active Clubs</div>
+                    <div class="text-3xl md:text-4xl font-bold text-white">50+</div>
+                    <div class="text-gray-400 mt-1 text-sm md:text-base">Active Clubs</div>
                 </div>
                 <div>
-                    <div class="text-4xl font-bold text-white">100+</div>
-                    <div class="text-gray-400 mt-1">Events</div>
+                    <div class="text-3xl md:text-4xl font-bold text-white">100+</div>
+                    <div class="text-gray-400 mt-1 text-sm md:text-base">Events</div>
                 </div>
                 <div>
-                    <div class="text-4xl font-bold text-white">24/7</div>
-                    <div class="text-gray-400 mt-1">Community</div>
+                    <div class="text-3xl md:text-4xl font-bold text-white">24/7</div>
+                    <div class="text-gray-400 mt-1 text-sm md:text-base">Community</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="py-24 bg-gray-50 relative">
+    <div class="py-16 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center">
+            <div class="text-center mb-12">
                 <h2 class="text-base text-blue-600 font-bold tracking-wide uppercase">Why Join?</h2>
                 <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
                     More than just a social network
                 </p>
             </div>
 
-            <div class="mt-20">
-                <div class="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-3">
-                    
-                    <div class="group relative bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                        <div class="absolute -top-6 left-8">
-                            <div class="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-blue-600 text-white shadow-lg group-hover:scale-110 transition-transform">
-                                <i class="fas fa-users text-xl"></i>
-                            </div>
-                        </div>
-                        <h3 class="mt-4 text-xl font-bold text-gray-900">Find Your Squad</h3>
-                        <p class="mt-4 text-gray-500 leading-relaxed">
-                            Browse dozens of clubs based on your interests. From Robotics to Art, find people who love what you love.
-                        </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="p-6 bg-gray-50 rounded-xl border border-gray-100 hover:shadow-lg transition">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 mb-4 text-xl">
+                        <i class="fas fa-users"></i>
                     </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Find Your Squad</h3>
+                    <p class="text-gray-600">Browse dozens of clubs based on your interests. Find people who love what you love.</p>
+                </div>
 
-                    <div class="group relative bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                        <div class="absolute -top-6 left-8">
-                            <div class="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-purple-600 text-white shadow-lg group-hover:scale-110 transition-transform">
-                                <i class="fas fa-bullhorn text-xl"></i>
-                            </div>
-                        </div>
-                        <h3 class="mt-4 text-xl font-bold text-gray-900">Never Miss Out</h3>
-                        <p class="mt-4 text-gray-500 leading-relaxed">
-                            Get real-time updates on campus events, workshops, and parties directly in your personalized feed.
-                        </p>
+                <div class="p-6 bg-gray-50 rounded-xl border border-gray-100 hover:shadow-lg transition">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 mb-4 text-xl">
+                        <i class="fas fa-bullhorn"></i>
                     </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Never Miss Out</h3>
+                    <p class="text-gray-600">Get real-time updates on campus events, workshops, and parties directly in your feed.</p>
+                </div>
 
-                    <div class="group relative bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                        <div class="absolute -top-6 left-8">
-                            <div class="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-pink-600 text-white shadow-lg group-hover:scale-110 transition-transform">
-                                <i class="fas fa-rocket text-xl"></i>
-                            </div>
-                        </div>
-                        <h3 class="mt-4 text-xl font-bold text-gray-900">Lead the Way</h3>
-                        <p class="mt-4 text-gray-500 leading-relaxed">
-                            Start your own club, manage members, create posts, and become a leader in your campus community.
-                        </p>
+                <div class="p-6 bg-gray-50 rounded-xl border border-gray-100 hover:shadow-lg transition">
+                    <div class="w-12 h-12 bg-pink-100 rounded-lg flex items-center justify-center text-pink-600 mb-4 text-xl">
+                        <i class="fas fa-rocket"></i>
                     </div>
-
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Lead the Way</h3>
+                    <p class="text-gray-600">Start your own club, manage members, and become a leader in your community.</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="relative bg-blue-700">
-        <div class="absolute inset-0">
-            <img class="w-full h-full object-cover mix-blend-multiply filter brightness-50" src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Campus life">
-        </div>
-        <div class="relative max-w-7xl mx-auto py-24 px-4 sm:py-32 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl mb-8">
-                Ready to dive in?
-            </h2>
-            <a href="/api/auth/register" class="inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-bold rounded-xl text-blue-700 bg-white hover:bg-gray-50 md:py-4 md:text-xl md:px-10 transition shadow-xl">
-                Create Free Account
-            </a>
-        </div>
+    <div class="bg-blue-700 py-16 text-center">
+        <h2 class="text-3xl font-extrabold text-white mb-8">Ready to dive in?</h2>
+        <a href="/api/auth/register" class="inline-block bg-white text-blue-700 font-bold px-8 py-3 rounded-lg shadow hover:bg-gray-100 transition">
+            Create Free Account
+        </a>
     </div>
-</div>
 
-<style>
-    /* Custom Animation for Background Blobs */
-    @keyframes blob {
-        0% { transform: translate(0px, 0px) scale(1); }
-        33% { transform: translate(30px, -50px) scale(1.1); }
-        66% { transform: translate(-20px, 20px) scale(0.9); }
-        100% { transform: translate(0px, 0px) scale(1); }
-    }
-    .animate-blob {
-        animation: blob 7s infinite;
-    }
-    .animation-delay-2000 {
-        animation-delay: 2s;
-    }
-    .animation-delay-4000 {
-        animation-delay: 4s;
-    }
-</style>
+</div>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
+        console.log("Index Page Loaded"); // Check console for this
+        
         const token = localStorage.getItem('token');
         const role = localStorage.getItem('role');
         
         if (token) {
-            // Determine dashboard link based on role
-            let dashboardLink = '/api/users/dashboard';
-            if (role === 'admin') dashboardLink = '/api/admin/dashboard';
+            console.log("User is logged in as:", role);
             
-            // Check if user is club_owner, they also use the standard dashboard but might have special permissions
-            // (Your backend handles the view rendering logic for dashboard/user/dashboard)
+            // 1. Determine Correct Dashboard Link
+            let dashboardLink = '/api/users/dashboard'; // Default
+            
+            if (role === 'admin') {
+                dashboardLink = '/api/admin/dashboard';
+            } else if (role === 'club_owner') {
+                dashboardLink = '/api/clubs/my'; // Correct Owner Portal
+            }
 
-            // Update Main CTA
+            // 2. Update Primary CTA Button ("Get Started" -> "Go to Dashboard")
             const primaryContainer = document.getElementById('hero-cta-primary');
             if (primaryContainer) {
                 primaryContainer.innerHTML = `
-                    <a href="${dashboardLink}" class="token-link flex items-center justify-center px-8 py-4 border border-transparent text-lg font-medium rounded-xl text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10 transition transform hover:-translate-y-1 shadow-lg">
-                        Go to Dashboard <i class="fas fa-tachometer-alt ml-2"></i>
+                    <a href="${dashboardLink}?token=${token}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10 shadow-lg">
+                        Go to Dashboard <i class="fas fa-arrow-right ml-2"></i>
                     </a>
                 `;
             }
 
-            // Append token to secondary link if needed
-            const secondaryLink = document.querySelector('#hero-cta-secondary a');
-            if (secondaryLink) {
-                secondaryLink.classList.add('token-link');
-                const separator = secondaryLink.href.includes('?') ? '&' : '?';
-                secondaryLink.href = `${secondaryLink.href}${separator}token=${token}`;
+            // 3. Update Secondary CTA Button (Explore Clubs)
+            // We just need to append the token so the user stays logged in
+            const secondaryContainer = document.getElementById('hero-cta-secondary');
+            if(secondaryContainer) {
+                const link = secondaryContainer.querySelector('a');
+                if(link) {
+                    const separator = link.href.includes('?') ? '&' : '?';
+                    link.href = `${link.href}${separator}token=${token}`;
+                }
             }
         }
     });
