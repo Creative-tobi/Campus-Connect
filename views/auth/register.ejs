@@ -1,95 +1,153 @@
 <%- include('../partials/header') %>
 
-<div class="max-w-md mx-auto bg-white p-8 border border-gray-200 rounded-lg shadow-sm mt-10">
-    
-    <div id="step-register">
-        <h2 class="text-2xl font-bold mb-2 text-center">Create Account</h2>
-        <p class="text-center text-gray-500 mb-6">Join the campus community</p>
+<div
+  class="max-w-sm sm:max-w-md mx-auto bg-white p-4 sm:p-8 border border-gray-200 rounded-lg shadow-sm mt-4 sm:mt-10">
+  <div id="step-register">
+    <h2 class="text-xl sm:text-2xl font-bold mb-2 text-center">
+      Create Account
+    </h2>
+    <p class="text-center text-gray-500 mb-4 sm:mb-6 text-sm sm:text-base">
+      Join the campus community
+    </p>
 
-        <form id="registerForm" class="space-y-4">
-            <div class="grid grid-cols-2 gap-4">
-                <input type="text" name="firstName" placeholder="First Name" required class="p-2 border rounded w-full">
-                <input type="text" name="lastName" placeholder="Last Name" required class="p-2 border rounded w-full">
-            </div>
-            <input type="email" name="email" id="reg-email" placeholder="Student Email" required class="p-2 border rounded w-full">
-            <input type="tel" name="phone" placeholder="Phone Number" required class="p-2 border rounded w-full">
-            <input type="text" name="faculty" placeholder="Faculty/Department" required class="p-2 border rounded w-full">
-            <input type="password" name="password" placeholder="Password" required class="p-2 border rounded w-full">
-            
-            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded font-bold hover:bg-blue-700">Sign Up</button>
-        </form>
-        <p class="mt-4 text-center text-sm">Already a member? <a href="/api/auth/login" class="text-blue-600">Login</a></p>
+    <form id="registerForm" class="space-y-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <input
+          type="text"
+          name="firstName"
+          placeholder="First Name"
+          required
+          class="p-2 sm:p-3 border rounded w-full" />
+        <input
+          type="text"
+          name="lastName"
+          placeholder="Last Name"
+          required
+          class="p-2 sm:p-3 border rounded w-full" />
+      </div>
+      <input
+        type="email"
+        name="email"
+        id="reg-email"
+        placeholder="Student Email"
+        required
+        class="p-2 sm:p-3 border rounded w-full" />
+      <input
+        type="tel"
+        name="phone"
+        placeholder="Phone Number"
+        required
+        class="p-2 sm:p-3 border rounded w-full" />
+      <input
+        type="text"
+        name="faculty"
+        placeholder="Faculty/Department"
+        required
+        class="p-2 sm:p-3 border rounded w-full" />
+      <input
+        type="password"
+        name="password"
+        placeholder="Password"
+        required
+        class="p-2 sm:p-3 border rounded w-full" />
+
+      <button
+        type="submit"
+        class="w-full bg-blue-600 text-white py-2 sm:py-3 rounded font-bold hover:bg-blue-700">
+        Sign Up
+      </button>
+    </form>
+    <p class="mt-4 text-center text-sm">
+      Already a member?
+      <a href="/api/auth/login" class="text-blue-600">Login</a>
+    </p>
+  </div>
+
+  <div id="step-otp" class="hidden text-center">
+    <div
+      class="w-12 sm:w-16 h-12 sm:h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+      <i class="fas fa-envelope text-green-600 text-xl sm:text-2xl"></i>
     </div>
+    <h2 class="text-xl sm:text-2xl font-bold mb-2">Verify Email</h2>
+    <p class="text-gray-500 mb-4 sm:mb-6 text-sm">
+      We sent a code to <span id="display-email" class="font-bold"></span>
+    </p>
 
-    <div id="step-otp" class="hidden text-center">
-        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <i class="fas fa-envelope text-green-600 text-2xl"></i>
-        </div>
-        <h2 class="text-2xl font-bold mb-2">Verify Email</h2>
-        <p class="text-gray-500 mb-6 text-sm">We sent a code to <span id="display-email" class="font-bold"></span></p>
-
-        <form id="otpForm" class="space-y-4">
-            <input type="text" name="otp" placeholder="Enter 4-digit OTP" maxlength="4" class="p-3 border rounded w-full text-center text-2xl tracking-widest" required>
-            <button type="submit" class="w-full bg-green-600 text-white py-2 rounded font-bold hover:bg-green-700">Verify Account</button>
-        </form>
-    </div>
-
+    <form id="otpForm" class="space-y-4">
+      <input
+        type="text"
+        name="otp"
+        placeholder="Enter 4-digit OTP"
+        maxlength="4"
+        class="p-2 sm:p-3 border rounded w-full text-center text-xl sm:text-2xl tracking-widest"
+        required />
+      <button
+        type="submit"
+        class="w-full bg-green-600 text-white py-2 sm:py-3 rounded font-bold hover:bg-green-700">
+        Verify Account
+      </button>
+    </form>
+  </div>
 </div>
 
 <script>
-    const registerForm = document.getElementById('registerForm');
-    const otpForm = document.getElementById('otpForm');
-    let userEmail = '';
+  const registerForm = document.getElementById("registerForm");
+  const otpForm = document.getElementById("otpForm");
+  let userEmail = "";
 
-    // Handle Registration
-    registerForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const data = Object.fromEntries(new FormData(e.target));
-        userEmail = data.email;
+  // Handle Registration
+  registerForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target));
+    userEmail = data.email;
 
-        try {
-            const res = await fetch('/api/auth/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-            const result = await res.json();
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const result = await res.json();
 
-            if (res.ok) {
-                // Switch to OTP view
-                document.getElementById('step-register').classList.add('hidden');
-                document.getElementById('step-otp').classList.remove('hidden');
-                document.getElementById('display-email').textContent = userEmail;
-            } else {
-                alert(result.error);
-            }
-        } catch (err) { console.error(err); }
-    });
+      if (res.ok) {
+        // Switch to OTP view
+        document.getElementById("step-register").classList.add("hidden");
+        document.getElementById("step-otp").classList.remove("hidden");
+        document.getElementById("display-email").textContent = userEmail;
+      } else {
+        alert(result.error);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  });
 
-    // Handle OTP Verification
-    otpForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const otp = new FormData(e.target).get('otp');
+  // Handle OTP Verification
+  otpForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const otp = new FormData(e.target).get("otp");
 
-        try {
-            const res = await fetch('/api/auth/verify-otp', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: userEmail, otp })
-            });
-            const result = await res.json();
+    try {
+      const res = await fetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: userEmail, otp }),
+      });
+      const result = await res.json();
 
-            if (res.ok) {
-                // Save Token and Redirect
-                localStorage.setItem('token', result.token);
-                localStorage.setItem('user', JSON.stringify(result.user));
-                localStorage.setItem('role', result.user.role);
-                window.location.href = `/api/users/dashboard?token=${result.token}`;
-            } else {
-                alert(result.error);
-            }
-        } catch (err) { console.error(err); }
-    });
+      if (res.ok) {
+        // Save Token and Redirect
+        localStorage.setItem("token", result.token);
+        localStorage.setItem("user", JSON.stringify(result.user));
+        localStorage.setItem("role", result.user.role);
+        window.location.href = `/api/users/dashboard?token=${result.token}`;
+      } else {
+        alert(result.error);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  });
 </script>
 
 <%- include('../partials/footer') %>

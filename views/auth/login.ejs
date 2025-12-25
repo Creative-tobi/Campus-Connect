@@ -1,56 +1,73 @@
 <%- include('../partials/header') %>
 
-<div class="max-w-md mx-auto bg-white p-8 border border-gray-200 rounded-lg shadow-sm">
-    <h2 class="text-2xl font-bold mb-6 text-center">Welcome Back</h2>
-    
-    <form id="loginForm" class="space-y-4">
-        <div>
-            <label class="block text-sm font-medium text-gray-700">Email</label>
-            <input type="email" name="email" required class="w-full mt-1 p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-700">Password</label>
-            <input type="password" name="password" required class="w-full mt-1 p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
-        </div>
-        <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition">Login</button>
-    </form>
-    <p class="mt-4 text-center text-sm">Don't have an account? <a href="/api/auth/register" class="text-blue-600">Register</a></p>
+<div
+  class="max-w-sm sm:max-w-md mx-auto bg-white p-4 sm:p-8 border border-gray-200 rounded-lg shadow-sm">
+  <h2 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-center">
+    Welcome Back
+  </h2>
+
+  <form id="loginForm" class="space-y-4">
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Email</label>
+      <input
+        type="email"
+        name="email"
+        required
+        class="w-full mt-1 p-2 sm:p-3 border rounded-md focus:ring-blue-500 focus:border-blue-500" />
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Password</label>
+      <input
+        type="password"
+        name="password"
+        required
+        class="w-full mt-1 p-2 sm:p-3 border rounded-md focus:ring-blue-500 focus:border-blue-500" />
+    </div>
+    <button
+      type="submit"
+      class="w-full bg-blue-600 text-white py-2 sm:py-3 rounded-md hover:bg-blue-700 transition">
+      Login
+    </button>
+  </form>
+  <p class="mt-4 text-center text-sm">
+    Don't have an account?
+    <a href="/api/auth/register" class="text-blue-600">Register</a>
+  </p>
 </div>
 
 <script>
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-        const data = Object.fromEntries(formData.entries());
+  document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
 
-        try {
-            const res = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-            const result = await res.json();
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const result = await res.json();
 
-            if (res.ok) {
-                // SAVE TOKEN AND REDIRECT
-                localStorage.setItem('token', result.token);
-                localStorage.setItem('role', result.user.role);
-                localStorage.setItem('user', JSON.stringify(result.user));
-                
-                // Redirect based on role
-                let dashboardUrl = '/api/users/dashboard'; // default
-                if (result.user.role === 'admin') dashboardUrl = '/api/admin/dashboard';
-                // Note: Club owners use the user dashboard view but with extra features, or specific route if you prefer
-                
-                window.location.href = `${dashboardUrl}?token=${result.token}`;
-            } else {
-                alert(result.error);
-            }
-        } catch (err) {
-            console.error(err);
-            alert('Login failed');
-        }
-    });
+      if (res.ok) {
+        // SAVE TOKEN AND REDIRECT
+        localStorage.setItem("token", result.token);
+        localStorage.setItem("role", result.user.role);
+        localStorage.setItem("user", JSON.stringify(result.user));
+
+        // Redirect based on role
+        let dashboardUrl = "/api/users/dashboard"; // default
+        if (result.user.role === "admin") dashboardUrl = "/api/admin/dashboard";
+
+        window.location.href = `${dashboardUrl}?token=${result.token}`;
+      } else {
+        alert(result.error);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Login failed");
+    }
+  });
 </script>
 
 <%- include('../partials/footer') %>

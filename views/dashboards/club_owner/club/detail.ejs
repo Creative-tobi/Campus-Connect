@@ -188,7 +188,7 @@
 </div>
 
 <script>
-  // 1. SAFE DATA EMBEDDING
+ 
   // We filter out any null members to prevent EJS/JS crashes
   const clubId = "<%= club._id %>";
   const ownerId = '<%= club.owner ? club.owner._id : "" %>';
@@ -216,7 +216,6 @@
     setupUI(userId, token);
     loadPosts(token);
 
-    // ATTACH EVENT LISTENER FOR POST SUBMISSION
     // We do this inside DOMContentLoaded to ensure the form exists
     const postForm = document.getElementById("createPostForm");
     if (postForm) {

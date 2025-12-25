@@ -117,7 +117,7 @@
 </div>
 
 <script>
-  // --- 1. CANCEL LOGIC ---
+ 
   // Directs the user back to the Club Owner Dashboard with the token
   function goBack() {
     const token = localStorage.getItem("token");
@@ -128,7 +128,7 @@
     }
   }
 
-  // --- 2. SUBMIT POST LOGIC ---
+  // SUBMIT POST 
   document
     .getElementById("createPostForm")
     .addEventListener("submit", async (e) => {
@@ -156,8 +156,8 @@
         if (res.ok) {
           alert("Post created successfully!");
           
-          // ✅ RELOAD LOGIC:
-          // Refreshes the page to clear the form so the user is ready to re-post if they want.
+          
+          // Refreshes the page 
           window.location.reload();
           
         } else {
