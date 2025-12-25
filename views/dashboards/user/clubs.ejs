@@ -1,201 +1,312 @@
 <%- include('../../partials/header') %>
 
-<div class="container mx-auto px-4">
-  <div
-    class="bg-blue-600 rounded-lg p-6 md:p-8 mb-6 md:mb-8 text-white text-center">
-    <h1 class="text-2xl md:text-3xl font-bold mb-2">Explore Clubs</h1>
-    <p class="mb-4 md:mb-6 text-sm md:text-base">
-      Find your community on Campus Connect
-    </p>
+<div class="container mx-auto px-4 py-8">
 
-    <div class="max-w-xl mx-auto flex flex-col sm:flex-row gap-2">
-      <input
-        type="text"
-        id="searchInput"
-        placeholder="Search clubs..."
-        class="flex-grow p-2 md:p-3 rounded-md text-gray-800 focus:outline-none" />
-      <select
-        id="categoryInput"
-        class="p-2 md:p-3 rounded-md text-gray-800 focus:outline-none">
-        <option value="">All Categories</option>
-        <option value="Academic">Academic</option>
-        <option value="Tech">Tech</option>
-        <option value="Sports">Sports</option>
-        <option value="Social">Social</option>
-      </select>
-      <button
-        onclick="fetchClubs()"
-        class="bg-gray-800 px-4 md:px-6 py-2 md:py-3 rounded-md hover:bg-gray-900 font-bold text-sm md:text-base">
-        Search
-      </button>
-    </div>
-  </div>
+    <% if (typeof club !== 'undefined' && club) { %>
+        <div class="relative w-full h-64 rounded-xl overflow-hidden shadow-sm bg-gray-200 mb-8">
+            <img src="<%= club.banner || 'https://via.placeholder.com/1200x400?text=Club+Banner' %>" 
+                 class="w-full h-full object-cover" 
+                 onerror="this.src='https://via.placeholder.com/1200x400?text=No+Banner'">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+            
+            <div class="absolute bottom-0 left-0 p-6 flex items-end">
+                
+                <% if (club.logo) { %>
+                    <img src="<%= club.logo %>" 
+                         class="w-24 h-24 rounded-full border-4 border-white bg-white object-cover shadow-lg mr-4">
+                <% } else { %>
+                    <div class="w-24 h-24 rounded-full border-4 border-white bg-white flex items-center justify-center text-blue-600 text-4xl font-bold shadow-lg mr-4">
+                        <%= club.name.charAt(0).toUpperCase() %>
+                    </div>
+                <% } %>
 
-  <div
-    id="clubs-grid"
-    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"></div>
+                <div class="text-white mb-2">
+                    <h1 class="text-3xl font-bold leading-tight"><%= club.name %></h1>
+                    <p class="opacity-90 text-sm"><%= club.category %> • <%= club.members ? club.members.length : 0 %> Members</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 space-y-8">
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <h2 class="text-xl font-bold text-gray-800 mb-3">About Us</h2>
+                    <p class="text-gray-600 leading-relaxed whitespace-pre-line"><%= club.description %></p>
+                </div>
+
+                <div id="club-feed-section" class="hidden">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">Club Activity</h2>
+                    <div id="club-posts-container" class="space-y-4">
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-spinner fa-spin mr-2"></i> Loading posts...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-1 space-y-6">
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <div id="action-button-container">
+                        <button disabled class="w-full bg-gray-100 text-gray-400 font-bold py-3 rounded-lg cursor-not-allowed">
+                            Checking status...
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <h3 class="font-bold text-gray-800 mb-3">Club Info</h3>
+                    <ul class="space-y-3 text-sm text-gray-600">
+                        <li class="flex items-center">
+                            <i class="fas fa-user-circle w-6 text-blue-500"></i>
+                            <span>Owner: <%= club.owner ? club.owner.firstName + ' ' + club.owner.lastName : 'Unknown' %></span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope w-6 text-blue-500"></i>
+                            <span><%= club.owner ? club.owner.email : 'N/A' %></span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-calendar w-6 text-blue-500"></i>
+                            <span>Established <%= new Date(club.createdAt).getFullYear() %></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const CLUB_ID = "<%= club._id %>";
+            
+            // FIXED: Safe JSON serialization to prevent syntax errors
+            const MEMBER_IDS = <%- JSON.stringify(club.members ? club.members.filter(m => m.user).map(m => m.user._id) : []) %>;
+        </script>
+
+    <% } else { %>
+        <div class="bg-blue-600 rounded-2xl p-8 mb-10 text-white text-center shadow-lg">
+            <h1 class="text-3xl font-bold mb-2">Explore Clubs</h1>
+            <p class="mb-6 opacity-90">Find your community on Campus Connect</p>
+
+            <div class="max-w-xl mx-auto flex flex-col sm:flex-row gap-3">
+                <input type="text" id="searchInput" placeholder="Search clubs..." class="flex-grow p-3 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-300" />
+                <select id="categoryInput" class="p-3 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                    <option value="">All Categories</option>
+                    <option value="Academic">Academic</option>
+                    <option value="Tech">Tech</option>
+                    <option value="Sports">Sports</option>
+                    <option value="Social">Social</option>
+                </select>
+                <button onclick="fetchClubs()" class="bg-gray-900 px-6 py-3 rounded-lg hover:bg-black font-bold transition shadow-md">Search</button>
+            </div>
+        </div>
+
+        <div id="clubs-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        <div id="loading-spinner" class="text-center py-10 hidden">
+            <i class="fas fa-spinner fa-spin text-2xl text-blue-500"></i>
+        </div>
+    <% } %>
+
 </div>
 
 <script>
-  document.addEventListener("DOMContentLoaded", fetchClubs);
-
-  async function fetchClubs() {
+document.addEventListener("DOMContentLoaded", () => {
     const token = localStorage.getItem("token");
-    const search = document.getElementById("searchInput").value;
-    const category = document.getElementById("categoryInput").value;
+    
+    // DETECT MODE: If CLUB_ID exists, we are in Detail Mode
+    if (typeof CLUB_ID !== 'undefined') {
+        initDetailView(token);
+    } else {
+        fetchClubs(); // List Mode
+    }
+});
 
-    // Construct Query
-    const params = new URLSearchParams();
-    if (search) params.append("search", search);
-    if (category) params.append("category", category);
-    // Use 'format=json' or Accept header to get JSON from the controller
-    params.append("format", "json");
+/* ================= LIST MODE LOGIC ================= */
+async function fetchClubs() {
+    const token = localStorage.getItem("token");
+    const search = document.getElementById("searchInput")?.value || '';
+    const category = document.getElementById("categoryInput")?.value || '';
+    const grid = document.getElementById("clubs-grid");
+    const loader = document.getElementById("loading-spinner");
+
+    if(!grid) return; // Safety check
+
+    grid.innerHTML = "";
+    if(loader) loader.classList.remove("hidden");
+
+    const params = new URLSearchParams({ search, category, format: 'json' });
 
     try {
-      const res = await fetch(`/api/users/clubs?${params.toString()}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      const grid = document.getElementById("clubs-grid");
-
-      grid.innerHTML = "";
-
-      if (data.clubs && data.clubs.length > 0) {
-        data.clubs.forEach((club) => {
-          let actionButton = "";
-          let ownerIndicator = "";
-
-          if (club.isOwner) {
-            actionButton = `<a href="/api/clubs/my" class="token-link block text-center w-full bg-purple-500 text-white font-bold py-2 rounded hover:bg-purple-600">Manage Club</a>`;
-            ownerIndicator =
-              '<span class="inline-block bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full mb-2">Your Club</span>';
-          } else if (club.isMember) {
-            actionButton = `<div class="flex gap-2">
-                                <a href="/api/clubs/${club._id}" class="token-link flex-1 text-center bg-blue-50 text-blue-600 font-bold py-2 rounded hover:bg-blue-100">View Club</a>
-                                <button onclick="leaveClub('${club._id}', '${club.name}')" class="flex-1 bg-red-500 text-white py-2 rounded hover:bg-red-600">Leave</button>
-                            </div>`;
-          } else {
-            actionButton = `<button onclick="joinClub('${club._id}')" class="block text-center w-full bg-green-500 text-white font-bold py-2 rounded hover:bg-green-600">Join Club</button>`;
-          }
-
-          grid.innerHTML += `
-                        <div class="bg-white border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition">
-                            <div class="h-32 bg-gray-200 relative">
-                                ${
-                                  club.banner
-                                    ? `<img src="${club.banner}" class="w-full h-full object-cover">`
-                                    : `<div class="w-full h-full bg-blue-500 flex items-center justify-center text-white font-bold text-4xl">${club.name
-                                        .charAt(0)
-                                        .toUpperCase()}</div>`
-                                }
-                            </div>
-                            <div class="p-5 pt-10 relative">
-                                ${
-                                  club.logo
-                                    ? `<img src="${club.logo}" class="w-16 h-16 rounded-full border-4 border-white absolute -top-8 left-4 bg-white">`
-                                    : `<div class="w-16 h-16 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-xl border-4 border-white absolute -top-8 left-4">${club.name
-                                        .charAt(0)
-                                        .toUpperCase()}</div>`
-                                }
-                                <div class="mb-2">
-                                    ${ownerIndicator}
-                                </div>
-                                <h3 class="font-bold text-lg">${club.name}</h3>
-                                <p class="text-sm text-blue-600 mb-2">${
-                                  club.category
-                                }</p>
-                                <p class="text-gray-500 text-sm mb-4 line-clamp-2">${
-                                  club.description
-                                }</p>
-                                ${actionButton}
-                            </div>
-                        </div>
-                    `;
+        const res = await fetch(`/api/users/clubs?${params}`, {
+            headers: { Authorization: `Bearer ${token}` }
         });
-        // Re-run the auto-token script from header since we added new links
-        document.dispatchEvent(new Event("DOMContentLoaded"));
-      } else {
-        grid.innerHTML = `<div class="col-span-3 text-center text-gray-400 py-10">No clubs found matching your criteria.</div>`;
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  }
+        const data = await res.json();
+        
+        if(loader) loader.classList.add("hidden");
 
-  async function fetchJoinedClubs() {
-    const token = localStorage.getItem("token");
-    try {
-      const res = await fetch("/api/users/clubs/joined", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      const container = document.getElementById("joined-clubs");
+        if (data.clubs && data.clubs.length > 0) {
+            data.clubs.forEach(club => {
+                
+                // FIXED: Logo Fallback logic for Client-Side Rendering
+                const logoHtml = club.logo 
+                    ? `<img src="${club.logo}" class="w-16 h-16 rounded-full border-4 border-white absolute -top-8 left-4 bg-white shadow-sm object-cover">`
+                    : `<div class="w-16 h-16 rounded-full border-4 border-white absolute -top-8 left-4 bg-blue-100 flex items-center justify-center text-blue-600 text-xl font-bold shadow-sm">
+                         ${club.name.charAt(0).toUpperCase()}
+                       </div>`;
 
-      if (data.clubs && data.clubs.length > 0) {
-        container.innerHTML = data.clubs
-          .map(
-            (club) => `
-                        <div class="bg-white border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition">
-                            <div class="h-24 bg-gray-200 relative">
-                                ${
-                                  club.banner
-                                    ? `<img src="${club.banner}" class="w-full h-full object-cover">`
-                                    : `<div class="w-full h-full bg-green-500 flex items-center justify-center text-white font-bold text-2xl">${club.name
-                                        .charAt(0)
-                                        .toUpperCase()}</div>`
-                                }
-                            </div>
-                            <div class="p-4">
-                                <h3 class="font-bold text-lg">${club.name}</h3>
-                                <p class="text-sm text-green-600 mb-2">${
-                                  club.category
-                                }</p>
-                                <div class="flex gap-2">
-                                    <a href="/api/clubs/${
-                                      club._id
-                                    }" class="token-link flex-1 text-center bg-green-50 text-green-600 font-bold py-2 rounded hover:bg-green-100">
-                                        View
-                                    </a>
-                                    <button onclick="leaveClub('${
-                                      club._id
-                                    }')" class="flex-1 bg-red-500 text-white py-2 rounded hover:bg-red-600">
-                                        Leave
-                                    </button>
-                                </div>
-                            </div>
+                grid.innerHTML += `
+                    <div class="bg-white border rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition group">
+                        <div class="h-32 bg-gray-200 relative">
+                            <img src="${club.banner || 'https://via.placeholder.com/400x150'}" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition"></div>
                         </div>
-                    `
-          )
-          .join("");
-        // Re-run the auto-token script from header since we added new links
-        document.dispatchEvent(new Event("DOMContentLoaded"));
-      } else {
-        container.innerHTML = `<div class="text-center text-white py-4">You haven't joined any clubs yet.</div>`;
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  async function leaveClub(clubId) {
-    if (confirm("Are you sure you want to leave this club?")) {
-      const token = localStorage.getItem("token");
-      try {
-        const res = await fetch(`/api/users/clubs/${clubId}/leave`, {
-          method: "DELETE",
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (res.ok) {
-          alert("You have left the club successfully");
-          fetchJoinedClubs(); // Refresh the joined clubs list
+                        <div class="p-5 pt-10 relative">
+                            
+                            ${logoHtml}
+                            
+                            <h3 class="font-bold text-lg text-gray-900">${club.name}</h3>
+                            <span class="inline-block bg-blue-50 text-blue-600 text-xs px-2 py-1 rounded font-medium mb-2">${club.category}</span>
+                            <p class="text-gray-500 text-sm mb-4 line-clamp-2">${club.description}</p>
+                            
+                            <a href="/api/users/clubs/${club._id}?token=${token}" class="block text-center w-full bg-blue-600 text-white font-bold py-2.5 rounded-lg hover:bg-blue-700 transition shadow-sm">
+                                View Club
+                            </a>
+                        </div>
+                    </div>`;
+            });
         } else {
-          alert("Error leaving the club");
+            grid.innerHTML = `<div class="col-span-full text-center text-gray-500 py-10">No clubs found.</div>`;
         }
-      } catch (err) {
+    } catch (err) {
         console.error(err);
-      }
+        if(loader) loader.classList.add("hidden");
     }
-  }
+}
+
+/* ================= DETAIL MODE LOGIC ================= */
+function initDetailView(token) {
+    const userStr = localStorage.getItem('user');
+    if (!userStr) return; // Not logged in
+
+    const user = JSON.parse(userStr);
+    const userId = user.id || user._id;
+    const container = document.getElementById('action-button-container');
+    const feedSection = document.getElementById('club-feed-section');
+
+    // 1. Determine Membership Status
+    const isMember = MEMBER_IDS.includes(userId);
+
+    // 2. Render Button
+    if (isMember) {
+        container.innerHTML = `
+            <div class="text-center">
+                <div class="bg-green-100 text-green-700 px-4 py-2 rounded-lg mb-3 font-bold text-sm">
+                    <i class="fas fa-check-circle mr-1"></i> You are a member
+                </div>
+                <button onclick="leaveClub()" class="w-full border border-red-200 text-red-600 font-bold py-2 rounded-lg hover:bg-red-50 transition">
+                    Leave Club
+                </button>
+            </div>`;
+        
+        // Show Feed
+        feedSection.classList.remove('hidden');
+        loadClubPosts(token);
+    } else {
+        container.innerHTML = `
+            <button onclick="joinClub()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition shadow-md text-lg">
+                Join Club
+            </button>`;
+    }
+}
+
+async function joinClub() {
+    const token = localStorage.getItem('token');
+    const btn = document.querySelector('#action-button-container button');
+    
+    if(btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending Request...';
+    }
+
+    try {
+        const res = await fetch(`/api/users/clubs/${CLUB_ID}/join`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+            alert("Join request sent successfully!");
+            btn.innerHTML = "Request Sent";
+            btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+            btn.classList.add('bg-gray-400', 'cursor-default');
+        } else {
+            alert(data.error || "Failed to join");
+            btn.disabled = false;
+            btn.innerHTML = "Join Club";
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Network error. Please try again.");
+        btn.disabled = false;
+        btn.innerHTML = "Join Club";
+    }
+}
+
+async function leaveClub() {
+    if(!confirm("Are you sure you want to leave?")) return;
+    
+    const token = localStorage.getItem('token');
+    try {
+        const res = await fetch(`/api/users/clubs/${CLUB_ID}/leave`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if(res.ok) {
+            alert("You left the club.");
+            window.location.reload();
+        } else {
+            alert("Failed to leave.");
+        }
+    } catch(e) { console.error(e); }
+}
+
+async function loadClubPosts(token) {
+    const container = document.getElementById('club-posts-container');
+    try {
+        const res = await fetch(`/api/clubs/${CLUB_ID}/posts`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+
+        container.innerHTML = '';
+        
+        if (data.posts && data.posts.length > 0) {
+            data.posts.forEach(post => {
+                // Handle Post Author Image Fallback
+                const authorImg = post.author.profilePicture 
+                    ? `<img src="${post.author.profilePicture}" class="w-8 h-8 rounded-full mr-3 object-cover">`
+                    : `<div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs mr-3">${post.author.firstName.charAt(0)}</div>`;
+
+                container.innerHTML += `
+                    <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
+                        <div class="flex items-center mb-3">
+                            ${authorImg}
+                            <div>
+                                <p class="text-sm font-bold text-gray-900">${post.author.firstName} ${post.author.lastName}</p>
+                                <p class="text-xs text-gray-500">${new Date(post.createdAt).toLocaleDateString()}</p>
+                            </div>
+                        </div>
+                        <h4 class="font-bold text-md mb-2">${post.title}</h4>
+                        <p class="text-gray-700 text-sm whitespace-pre-line">${post.content}</p>
+                        ${post.media ? `<img src="${post.media}" class="mt-3 w-full rounded-lg max-h-80 object-cover">` : ''}
+                    </div>
+                `;
+            });
+        } else {
+            container.innerHTML = `<div class="text-center py-6 text-gray-500 border border-dashed rounded-lg">No posts yet.</div>`;
+        }
+    } catch (e) {
+        container.innerHTML = `<div class="text-red-500 text-sm">Failed to load posts.</div>`;
+    }
+}
 </script>
 
 <%- include('../../partials/footer') %>
